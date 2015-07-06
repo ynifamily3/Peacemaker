@@ -14,6 +14,11 @@ router.get('/login', function(req, res, next) {
 	res.render('user_login');
 });
 
+router.get('/logout', function(req, res, next) {
+	req.session.destroy();
+	res.redirect('/user');
+});
+
 router.post('/login', function(req, res, next) {
 	req.session.username = req.body.username;
 	res.redirect('/user');
