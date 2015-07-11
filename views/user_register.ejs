@@ -6,16 +6,24 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>login</h1>
-    <form action="/user/login" method="POST">
+    <h1>register</h1>
+    <form action="/user/register" method="POST">
+      name<br>
+      <input type="text" name="name">
+      <br>
       username<br>
       <input type="text" name="username">
       <br>
       password<br>
       <input type="password" name="password">
+      <br>
+      e-mail<br>
+      <input type="email" name="mail">
+      <br>
+      phone<br>
+      <input type="tel" name="phone">
       <br><br>
       <input type="submit" value="login">
     </form>
-    <a href="/user/register">register</a>
   </body>
 </html>
