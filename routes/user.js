@@ -4,6 +4,8 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
 var url = 'mongodb://localhost:27017/peacemaker';
 
+var validator = require('validator');
+
 var crypto = require('crypto');
 var SHA512 = require('crypto-js/sha512');
 var SHA1 = require('crypto-js/sha1');
@@ -81,6 +83,12 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 		mail: req.body.mail,
 		phone: req.body.phone,
 		salt: _salt
+	};
+	if (!validator.isAlphanumeric(req.body.username) ||
+			!validator.isEmail(req.body.mail) ||
+			!validator.isNumeric(req.body.phone)) {
+		res.redirect('/user/register');
+		return;
 	};
 	verifyReCaptcha(req.body["g-recaptcha-response"], function(success) {
 		if (success) {
