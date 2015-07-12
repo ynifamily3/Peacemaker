@@ -82,13 +82,13 @@
 					</div>
 					<div class="form-group">
 						<label for="phoneInput">전화번호</label>
-						<input type="tel" id="phoneInput" class="form-control" name="phone" placeholder="전화번호" ng-model="user.phone" ng-pattern="/^[a-zA-Z0-9]+$/" ng-Minlength=9 ng-Maxlength=12 required>
+						<input type="tel" id="phoneInput" class="form-control" name="phone" placeholder="전화번호" ng-model="user.phone" ng-pattern="/^[0-9]+$/" ng-Minlength=9 ng-Maxlength=12 required>
 						<div ng-show="form.$sumbitted || form.phone.$touched">
 							<br/>
 							<div class="alert alert-danger" ng-show="form.phone.$error.required" role="alert">
 								<p>전화번호를 입력하지 않았습니다.</p>
 							</div>
-							<div class="alert alert-danger" ng-show="form.phone.$error.minlength || form.name.$error.maxlength" role="alert">
+							<div class="alert alert-danger" ng-show="form.phone.$error.minlength || form.phone.$error.maxlength" role="alert">
 								<p>전화번호는 9문자 이상, 12문자 이하여야 합니다.</p>
 							</div>
 							<div class="alert alert-danger" ng-show="form.phone.$invalid" role="alert">
