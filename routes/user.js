@@ -8,9 +8,24 @@ var crypto = require('crypto');
 var SHA512 = require('crypto-js/sha512');
 var SHA1 = require('crypto-js/sha1');
 
-var Recaptcha = require('recaptcha').Recaptcha;
-var PUBLIC_KEY = '6Lc9rQkTAAAAANMmcu73j0W8Jo-LffN4CH0Fi8Wq';
-var PRIVATE_KEY = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
+var https = require('https');
+var SECRET = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
+function verifyReCaptcha(key, cb) {
+	https.get("https://www.google.com/recaptcha/api/siteverify?secret=" + SECRET + "&response=" + key, function(res) {
+		var data = "";
+		res.on('data', function (d) {
+			data += d.toString();
+		});
+		res.on('end', function() {
+			try {
+				var parsedData = JSON.parse(data);
+				cb(parsedData.success);
+			} catch (e) {
+				cb(false);
+			}
+		});
+	});
+}
 
 router.get('/', function(req, res, next) {
 	if (!req.session.username) {
@@ -62,13 +77,7 @@ router.post('/register', function(req, res, next) {
 		phone: req.body.phone,
 		salt: _salt
 	};
-	var data = {
-				remoteip:  req.connection.remoteAddress,
-				challenge: req.body.recaptcha_challenge_field,
-				response:  req.body.recaptcha_response_field
-		};
-	var recaptcha = new Recaptcha(PUBLIC_KEY, PRIVATE_KEY, data);
-	recaptcha.verify(function(success, error_code) {
+	verifyReCaptcha(req.body["g-recaptcha-response"], function(success) {
 		if (success) {
 			MongoClient.connect(url, function(err, db) {
 				if (err) throw err;
@@ -85,8 +94,7 @@ router.post('/register', function(req, res, next) {
 					}
 				});
 			});
-		}
-		else {
+		} else {
 			res.redirect('/user/register')
 		}
 	});
