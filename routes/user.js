@@ -8,6 +8,11 @@ var crypto = require('crypto');
 var SHA512 = require('crypto-js/sha512');
 var SHA1 = require('crypto-js/sha1');
 
+var csrf = require('csurf');
+var csrfProtection = csrf({cookie: true});
+var bodyParser = require('body-parser');
+var parseForm = bodyParser.urlencoded({extended: false});
+
 var https = require('https');
 var SECRET = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
 function verifyReCaptcha(key, cb) {
@@ -35,11 +40,11 @@ router.get('/', function(req, res, next) {
 	}
 });
 
-router.get('/login', function(req, res, next) {
-	res.render('user_login');
+router.get('/login', csrfProtection, function(req, res, next) {
+	res.render('user_login', {csrfToken: req.csrfToken()});
 });
 
-router.post('/login', function(req, res, next) {
+router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var users = db.collection('users');
@@ -63,11 +68,11 @@ router.get('/hello', function(req, res, next) {
 	res.render('user_hello', {name:req.session.username});
 });
 
-router.get('/register', function(req, res, next) {
-	res.render('user_register');
+router.get('/register', csrfProtection, function(req, res, next) {
+	res.render('user_register', {csrfToken: req.csrfToken()});
 });
 
-router.post('/register', function(req, res, next) {
+router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 	var _salt = (SHA1(crypto.randomBytes(256)).toString()).slice(0,32);
 	var user = {
 		name: req.body.name,
