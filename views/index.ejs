@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  	<meta charset="utf-8"/>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <a href="/user/login">Log In</a>
-    <a href="https://github.com/niceb5y/peacemaker">Repo</a>
-  </body>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+		<script type="text/javascript" src="/js/angular.js"></script>
+		<script type="text/javascript" src="/js/jquery.js"></script>
+		<script type="text/javascript" src="/js/bootstrap.js"></script>
+		<title>hello</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="page-header">
+					<h1>Peacemaker <small>조별과제에 평화가 깃들기를.</small></h1>
+				</div>
+				<a class="btn btn-primary" href="/user/login"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> 로그인</a>
+				<a class="btn btn-info" href="https://github.com/niceb5y/peacemaker"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> 레포</a>
+			</div>
+		</div>
+	</body>
 </html>

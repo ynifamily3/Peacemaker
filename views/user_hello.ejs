@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>Hello!</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1>Hello <%= name %>!</h1>
-    <a href="/user/logout">logout</a>
-  </body>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+		<script type="text/javascript" src="/js/angular.js"></script>
+		<script type="text/javascript" src="/js/jquery.js"></script>
+		<script type="text/javascript" src="/js/bootstrap.js"></script>
+		<title>Hello!</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="col-md-6 col-md-offset-3">
+				<div class="page-header">
+					<h1>Hello <%= name %>!</h1>
+				</div>
+				<a class="btn btn-danger" href="/user/logout">로그아웃</a>
+			</div>
+		</div>
+	</body>
 </html>
