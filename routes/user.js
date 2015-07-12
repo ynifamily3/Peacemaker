@@ -8,12 +8,16 @@ var crypto = require('crypto');
 var SHA512 = require('crypto-js/sha512');
 var SHA1 = require('crypto-js/sha1');
 
+var Recaptcha = require('recaptcha').Recaptcha;
+var PUBLIC_KEY = '6Lc9rQkTAAAAANMmcu73j0W8Jo-LffN4CH0Fi8Wq';
+var PRIVATE_KEY = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
+
 router.get('/', function(req, res, next) {
-  if (!req.session.username) {
-  	res.redirect('/user/login');
-  } else {
-  	res.redirect('/user/hello')
-  }
+	if (!req.session.username) {
+		res.redirect('/user/login');
+	} else {
+		res.redirect('/user/hello')
+	}
 });
 
 router.get('/login', function(req, res, next) {
@@ -58,20 +62,33 @@ router.post('/register', function(req, res, next) {
 		phone: req.body.phone,
 		salt: _salt
 	};
-	MongoClient.connect(url, function(err, db) {
-		if (err) throw err;
-		var users = db.collection('users');
-		users.findOne({username:req.body.username}, function(err, doc) {
-			if (err) throw err;
-			if (doc == null) {
-				users.insert(user, function(err, doc) {
+	var data = {
+				remoteip:  req.connection.remoteAddress,
+				challenge: req.body.recaptcha_challenge_field,
+				response:  req.body.recaptcha_response_field
+		};
+	var recaptcha = new Recaptcha(PUBLIC_KEY, PRIVATE_KEY, data);
+	recaptcha.verify(function(success, error_code) {
+		if (success) {
+			MongoClient.connect(url, function(err, db) {
+				if (err) throw err;
+				var users = db.collection('users');
+				users.findOne({username:req.body.username}, function(err, doc) {
 					if (err) throw err;
-					res.redirect('/user/login');
-				})
-			} else {
-				res.redirect('/user/register');
-			}
-		});
+					if (doc == null) {
+						users.insert(user, function(err, doc) {
+							if (err) throw err;
+							res.redirect('/user/login');
+						})
+					} else {
+						res.redirect('/user/register');
+					}
+				});
+			});
+		}
+		else {
+			res.redirect('/user/register')
+		}
 	});
 });
 
