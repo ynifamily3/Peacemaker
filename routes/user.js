@@ -47,6 +47,8 @@ router.get('/login', csrfProtection, function(req, res, next) {
 });
 
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
+	console.log(req.body.username);
+	console.log(req.body.password);
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var users = db.collection('users');
@@ -54,8 +56,12 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 			if (err) throw err;
 			if (doc != null && doc.password == SHA512(req.body.password + doc.salt).toString()) {
 				req.session.username = req.body.username;
+				res.json({'status': 'success'});
+				return;
+			} else {
+				res.json({'status': 'fail', 'err': 'invalid_value'});
+				return;
 			};
-			res.redirect('/user');
 		});
 	});
 });
@@ -87,7 +93,7 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 	if (!validator.isAlphanumeric(req.body.username) ||
 			!validator.isEmail(req.body.mail) ||
 			!validator.isNumeric(req.body.phone)) {
-		res.redirect('/user/register');
+		res.json({'status': 'fail', 'err': 'invalid_value'});
 		return;
 	};
 	verifyReCaptcha(req.body["g-recaptcha-response"], function(success) {
@@ -100,15 +106,18 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 					if (doc == null) {
 						users.insert(user, function(err, doc) {
 							if (err) throw err;
-							res.redirect('/user/login');
-						})
+							res.json({'status': 'success'});
+							return;
+						});
 					} else {
-						res.redirect('/user/register');
+						res.json({'status': 'fail', 'err': 'duplicate_username'});
+						return;
 					}
 				});
 			});
 		} else {
-			res.redirect('/user/register')
+			res.json({'status': 'fail', 'err': 'invalid_captcha'});
+			return;
 		}
 	});
 });
