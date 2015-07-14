@@ -42,13 +42,22 @@ router.get('/', function(req, res, next) {
 	}
 });
 
+router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		var users = db.collection('users');
+		users.findOne({username:req.body.username}, function(err, doc) {
+			if (err) throw err;
+			res.json({'exist': (doc != null)});
+		});
+	});
+});
+
 router.get('/login', csrfProtection, function(req, res, next) {
 	res.render('user_login', {csrfToken: req.csrfToken()});
 });
 
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
-	console.log(req.body.username);
-	console.log(req.body.password);
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var users = db.collection('users');
