@@ -18,7 +18,7 @@
 				<div class="alert alert-danger alert-invalid-value hidden" role="alert">
 					<p>아이디 또는 패스워드가 올바르지 않습니다.</p>
 				</div>
-				<form name="form" novalidate>
+				<form id="login-form" name="form" novalidate>
 					<div class="form-group">
 						<label for="usernameInput">아이디</label>
 						<input type="text" id="usernameInput" class="form-control" name="username" placeholder="아이디" ng-model="user.id" ng-pattern="/^[a-zA-Z0-9]+$/" ng-Maxlength=32 required>
@@ -50,7 +50,7 @@
 					</div>
 					<input type="hidden" name="_csrf" value="<%=csrfToken%>">
 					<div class="form-group">
-						<input type="button" id="login" class="btn btn-primary"  ng-disabled="form.$invalid" value="로그인">
+						<input type="submit" class="btn btn-primary"  ng-disabled="form.$invalid" value="로그인">
 						<a class="btn btn-info" href="/user/register">회원가입</a>
 					</div>
 				</form>
@@ -63,7 +63,7 @@
 			$scope.user = {};
 		}]);
 
-			$('#login').click(function() {
+			$('#login-form').submit(function() {
 				$.ajax({
 					type: 'POST',
 					url: '/user/login',
@@ -76,6 +76,7 @@
 						};
 					}
 				});
+				return false;
 			});
 		</script>
 	</body>

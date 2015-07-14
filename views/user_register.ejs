@@ -21,7 +21,7 @@
 				<div class="page-header">
 					<h1>회원가입</h1>
 				</div>
-				<form name="form" novalidate>
+				<form id="register-form" name="form" novalidate>
 					<div class="form-group">
 						<label for="nameInput">이름</label>
 						<input type="text" id="usernameInput" class="form-control" name="name" placeholder="이름" ng-model="user.name" ng-Minlength=2 ng-Maxlength=32 required>
@@ -108,7 +108,7 @@
 					</div>
 					<input type="hidden" name="_csrf" value="<%=csrfToken%>">
 					<div class="form-group">
-						<input type="button" id="register" ng-disabled="form.$invalid" class="btn btn-primary" value="회원가입">
+						<input type="submit" ng-disabled="form.$invalid" class="btn btn-primary" value="회원가입">
 					</div>
 				</form>
 			</div>
@@ -149,7 +149,7 @@
 				};
 			});
 
-			$('#register').click(function() {
+			$('#register-form').submit(function() {
 				$.ajax({
 					type: 'POST',
 					url: '/user/register',
@@ -164,6 +164,7 @@
 						};
 					}
 				});
+				return false;
 			});
 		</script>
 	</body>
