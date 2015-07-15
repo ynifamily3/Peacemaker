@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<% for (var i = 0; i < config.css.length; i++) { %>
+	<link rel="stylesheet" type="text/css" href="/css/<%= config.css[i] %>">
+	<% }; %>
+	<% for (var i = 0; i < config.js.length; i++) { %>
+	<script src="/js/<%= config.js[i] %>"></script>
+	<% }; %>
+	<% if (locals.js) { for (var i = 0; i < js.length; i++) { %>
+	<script src="/js/<%= js[i] %>"></script>
+	<% }}; %>
+	<% if (locals.extjs) { for (var i = 0; i < extjs.length; i++) { %>
+	<script src="<%= extjs[i] %>"></script>
+	<% }}; %>
+	<% if (locals.title) { %>
+	<title><%= config.title + " - " + title %></title>
+	<% } else { %>
+	<title><%= config.title %></title>		
+	<% }; %>
+</head>
+<body>
+<div class="container">

@@ -1,0 +1,13 @@
+{
+	"title": "Peacemaker",
+	"subtitle": "",
+	"css": [
+		"bootstrap.css",
+		"style.css"
+	],
+	"js": [
+		"angular.js",
+		"jquery.js",
+		"bootstrap.js"
+	]
+}

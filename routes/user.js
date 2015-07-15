@@ -54,7 +54,17 @@ router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
 });
 
 router.get('/login', csrfProtection, function(req, res, next) {
-	res.render('user_login', {csrfToken: req.csrfToken()});
+	if (req.session.username) {
+		res.redirect('/user/hello');
+		return;
+	}
+	res.render('user_login', {
+		csrfToken: req.csrfToken(),
+		title: '로그인',
+		js_b: [
+			'user_login.js'
+		]
+	});
 });
 
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
@@ -65,6 +75,7 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 			if (err) throw err;
 			if (doc != null && doc.password == SHA512(req.body.password + doc.salt).toString()) {
 				req.session.username = req.body.username;
+				req.session.name = doc.name;
 				res.json({'status': 'success'});
 				return;
 			} else {
@@ -82,11 +93,31 @@ router.get('/logout', function(req, res, next) {
 });
 
 router.get('/hello', function(req, res, next) {
-	res.render('user_hello', {name:req.session.username});
+	if (!req.session.username) {
+		res.redirect('/user/login');
+		return;
+	}
+	res.render('user_hello', {
+		title: '안녕하세요!',
+		name:req.session.name
+	});
 });
 
 router.get('/register', csrfProtection, function(req, res, next) {
-	res.render('user_register', {csrfToken: req.csrfToken()});
+	if (req.session.username) {
+		res.redirect('/user/hello');
+	} else {
+		res.render('user_register', {
+			csrfToken: req.csrfToken(),
+			title: '회원가입',
+			js_b: [
+				'user_register.js'
+			],
+			extjs: [
+				'https://www.google.com/recaptcha/api.js'
+			]
+		});
+	};
 });
 
 router.post('/register', parseForm, csrfProtection, function(req, res, next) {
