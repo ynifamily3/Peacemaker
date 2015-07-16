@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
 	if (!req.session.username) {
 		res.redirect('/user/login');
 	} else {
-		res.redirect('/user/hello')
+		res.redirect('/dashboard')
 	}
 });
 
@@ -55,7 +55,7 @@ router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
 
 router.get('/login', csrfProtection, function(req, res, next) {
 	if (req.session.username) {
-		res.redirect('/user/hello');
+		res.redirect('/dashboard');
 		return;
 	}
 	res.render('user_login', {
@@ -76,6 +76,7 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 			if (doc != null && doc.password == SHA512(req.body.password + doc.salt).toString()) {
 				req.session.username = req.body.username;
 				req.session.name = doc.name;
+				req.session._id = doc._id;
 				res.json({'status': 'success'});
 				return;
 			} else {
@@ -92,20 +93,9 @@ router.get('/logout', function(req, res, next) {
 	});
 });
 
-router.get('/hello', function(req, res, next) {
-	if (!req.session.username) {
-		res.redirect('/user/login');
-		return;
-	}
-	res.render('user_hello', {
-		title: '안녕하세요!',
-		name:req.session.name
-	});
-});
-
 router.get('/register', csrfProtection, function(req, res, next) {
 	if (req.session.username) {
-		res.redirect('/user/hello');
+		res.redirect('/dashboard');
 	} else {
 		res.render('user_register', {
 			csrfToken: req.csrfToken(),

@@ -1,0 +1,63 @@
+<% include layout_header %>
+<div ng-app="projectValidation" ng-controller="projectController" class="col-md-6 col-md-offset-3">
+	<div class="page-header">
+		<h1>새 프로젝트</h1>
+	</div>
+	<form id="project-form" name="form" novalidate>
+		<div class="form-group">
+			<label for="nameInput">프로젝트 이름</label>
+			<input type="text" id="nameInput" class="form-control" name="name" placeholder="아이디" ng-model="project.name" ng-Maxlength=16 required>
+			<br/>
+			<div ng-show="form.$sumbitted || form.name.$touched">
+				<div class="alert alert-danger" ng-show="form.name.$error.required" role="alert">
+					<p>프로젝트 이름을 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.name.$error.maxlength" role="alert">
+					<p>프로젝트 이름은 16자 이하여야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="addrInput">프로젝트 URL</label>
+			<input type="text" id="addrInput" class="form-control" name="addr" placeholder="프로젝트 URL" ng-model="project.addr" ng-model-options="{ updateOn: 'default blur', debounce: { default: 500, blur: 0 } }" ng-pattern="/^[a-zA-Z0-9]+$/" ng-Maxlength=32 required addr>
+			<br/>
+			<span><%= config.url %>p/{{ project.addr }}</span>
+			<div ng-show="form.$sumbitted || form.addr.$touched">
+				<div class="alert alert-danger" ng-show="form.addr.$error.required" role="alert">
+					<p>프로젝트 URL을 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.addr.$error.maxlength" role="alert">
+					<p>프로젝트 URL은 32자 이하여야 합니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.addr.$invalid" role="alert">
+					<p>프로젝트 URL은 영어 또는 숫자로 이루어져야 합니다.</p>
+				</div>
+				<div class="alert alert-info" ng-show="form.addr.$pending.addr" role="alert">
+					<p>사용가능한 주소인지 검사하는 중입니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.addr.$error.addr" role="alert">
+					<p>이미 사용중인 주소입니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="descInput">프로젝트 설명 (선택)</label>
+			<input type="text" id="descInput" class="form-control" name="desc" placeholder="프로젝트 설명" ng-model="project.desc" ng-Maxlength=32>
+			<br/>
+			<div ng-show="form.$sumbitted || form.desc.$touched">
+				<div class="alert alert-danger" ng-show="form.desc.$error.maxlength" role="alert">
+					<p>프로젝트 설명은 32자 이하여야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="g-recaptcha" data-sitekey="6Lc9rQkTAAAAANMmcu73j0W8Jo-LffN4CH0Fi8Wq"></div><br/>
+		<div class="alert alert-danger alert-invalid-captcha hidden" role="alert">
+			<p>'로봇이 아닙니다.'에 체크하지 않았습니다.</p>
+		</div>
+		<input type="hidden" name="_csrf" value="<%=csrfToken%>">
+		<div class="form-group">
+			<input type="submit" class="btn btn-primary"  ng-disabled="form.$invalid" value="프로젝트 생성">
+		</div>
+	</form>
+</div>
+<% include layout_footer %>
