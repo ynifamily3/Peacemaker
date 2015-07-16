@@ -72,7 +72,8 @@ router.post('/new', parseForm, csrfProtection, function(req, res, next) {
 		name: req.body.name,
 		url: req.body.addr,
 		desc: req.body.desc,
-		admin: new ObjectID(req.session._id)
+		admin: new ObjectID(req.session._id),
+		users: [new ObjectID(req.session._id)]
 	};
 	if (!validator.isAlphanumeric(req.body.addr)) {
 		res.json({'status': 'fail', 'err': 'invalid_value'});
@@ -88,16 +89,8 @@ router.post('/new', parseForm, csrfProtection, function(req, res, next) {
 					if (!doc) {
 						projects.insert(project, function(err, doc) {
 							if (err) throw err;
-							projects.update({
-								_id: project._id
-							},
-							{
-								$push: { users: new ObjectID(req.session._id) }
-							}, function(err, doc) {
-								if (err) throw err;
-								res.json({'status': 'success'});
-								return;
-							});
+							res.json({'status': 'success'});
+							return;
 						});
 					} else {
 						res.json({'status': 'fail', 'err': 'duplicate_url'});
