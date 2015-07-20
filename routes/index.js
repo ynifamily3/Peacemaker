@@ -36,7 +36,11 @@ function verifyReCaptcha(key, cb) {
 }
 
 router.get('/', function(req, res, next) {
-  res.render('index');
+	if (req.session.username) {
+		res.redirect('/dashboard');
+	} else {
+		res.render('index');
+	}
 });
 
 router.get('/dashboard', function(req, res, next) {
@@ -50,7 +54,7 @@ router.get('/dashboard', function(req, res, next) {
 		projects.find({users: {$in: [new ObjectID(req.session._id)]}}).toArray(function(err, docs) {
 			if (err) throw err;
 			res.render('dashboard', {
-				title: '안녕하세요!',
+				title: '대시보드',
 				name:req.session.name,
 				projects:docs
 			});

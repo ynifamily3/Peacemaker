@@ -1,21 +1,36 @@
 <% include layout_header %>
-<div class="col-md-6 col-md-offset-3">
-	<div class="page-header">
-		<h1>안녕하세요 <%= name %>님!</h1>
-	</div>
-	<iframe width="560" height="315" src="https://www.youtube.com/embed/kFx_IniNjfE" frameborder="0" allowfullscreen></iframe>
-	<a class="btn btn-primary" href="/project/new">새 프로젝트</a>
-	<a class="btn btn-danger" href="/user/logout">로그아웃</a><br>
-	<% if (projects.length) { %>
-	<div class="list-group">
-	<% for (var i = 0; i < projects.length; i++) { %>
-		<a href="/p/<%= projects[i].url %>" class="list-group-item"><%= projects[i].name %></a>
-	<% } %>
-	</div>
-	<% } else { %>
-		<div class="alert alert-warning" role="alert">
-			<p>진행중인 프로젝트가 존재하지 않습니다.</p>
+<div class="col-md-8">
+	<div class="panel panel-info">
+		<div class="panel-heading">알림</div>
+		<div class="list-group">
+			<a href="#" class="list-group-item disabled">새로운 알림이 없습니다.</a>
 		</div>
-	<% };%>
+	</div>
+	<div class="embed-responsive embed-responsive-16by9">
+	  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/fyMhvkC3A84" frameborder="0" allowfullscreen></iframe>
+	</div>
+</div>
+<div class="col-md-4">
+	<div class="panel panel-default">
+		<div class="panel-heading"><%= name %>님 안녕하세요!</div>
+		<div class="panel-body">
+			<a class="btn btn-danger btn-block" href="/user/logout">로그아웃</a>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">프로젝트</div>
+		<div class="panel-body">
+			<a class="btn btn-success btn-block" href="/project/new">신규 프로젝트</a>
+		</div>
+		<div class="list-group">
+			<% if (projects.length) { %>
+			<% for (var i = 0; i < projects.length; i++) { %>
+			<a href="/p/<%= projects[i].url %>" class="list-group-item"><%= projects[i].name %></a>
+			<% } %>
+			<% } else { %>
+			<a href="#" class="list-group-item disabled">진행중인 프로젝트가 존재하지 않습니다.</a>
+			<% };%>
+		</div>
+	</div>
 </div>
 <% include layout_footer %>

@@ -1,3 +1,6 @@
 input.ng-touched.ng-invalid {
 	border: 1px solid #e74c3c;
 }
+nav#navbar {
+	margin-top: 15px;
+}

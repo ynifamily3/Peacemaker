@@ -23,3 +23,30 @@
 </head>
 <body>
 <div class="container">
+<div class="col-md-12">
+	<nav id="navbar" class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="sr-only">토글 내비게이션</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><%= config.title %></a>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+					<!--<li><a href="#">Link</a></li>-->
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<% if (locals.name) { %>
+					<li><a href="/dashboard">대시보드</a></li>
+					<% } else {  %>
+					<li><a href="/user/login">로그인</a></li>
+					<% }; %>
+				</ul>
+			</div>
+		</div>
+	</nav>
+</div>
