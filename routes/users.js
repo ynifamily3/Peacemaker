@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectID = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/peacemaker';
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+	host     : 'localhost',
+	user     : 'peacemaker',
+	password : 's9MxufFcuShxDaB3',
+	database : 'peacemaker'
+});
 
 var validator = require('validator');
 
@@ -17,13 +21,9 @@ var bodyParser = require('body-parser');
 var parseForm = bodyParser.urlencoded({extended: false});
 
 router.get('/:user', function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
+	connection.query('select * from users where username = ?', [req.params.user], function(err, result) {
 		if (err) throw err;
-		var users = db.collection('users');
-		users.findOne({username:req.params.user}, function(err, doc) {
-			if (err) throw err;
-			res.json(doc);
-		});
+		res.json(result[0]);
 	});
 });
 
