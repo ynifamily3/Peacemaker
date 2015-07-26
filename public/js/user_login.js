@@ -11,7 +11,7 @@ $('#login-form').submit(function() {
 		data: $('form').serialize(),
 		success: function(data) {
 			if (data.status == 'success') {
-				window.location.replace('/user');
+				window.location.replace('/dashboard');
 			} else {
 				$('.alert-invalid-value').removeClass('hidden');
 			};

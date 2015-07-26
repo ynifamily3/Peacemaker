@@ -1,13 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-	host     : 'localhost',
-	user     : 'peacemaker',
-	password : 's9MxufFcuShxDaB3',
-	database : 'peacemaker'
-});
+var MongoClient = require('mongodb').MongoClient;
+var ObjectID = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/peacemaker';
 
 var validator = require('validator');
 
@@ -20,10 +16,14 @@ var csrfProtection = csrf({cookie: true});
 var bodyParser = require('body-parser');
 var parseForm = bodyParser.urlencoded({extended: false});
 
-router.get('/:project', function(req, res, next) {
-	connection.query('select * from projects where url = ?', [req.params.project], function(err, result) {
+router.get('/:user', function(req, res, next) {
+	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		res.json(result[0]);
+		var users = db.collection('users');
+		users.findOne({username:req.params.user}, function(err, doc) {
+			if (err) throw err;
+			res.json(doc);
+		});
 	});
 });
 

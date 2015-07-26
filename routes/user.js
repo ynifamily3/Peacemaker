@@ -1,13 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
-var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/peacemaker';
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+	host     : 'localhost',
+	user     : 'peacemaker',
+	password : 's9MxufFcuShxDaB3',
+	database : 'peacemaker'
+});
 
 var validator = require('validator');
 
 var crypto = require('crypto');
-var SHA512 = require('crypto-js/sha512');
+var PBKDF2 = require('crypto-js/pbkdf2');
 var SHA1 = require('crypto-js/sha1');
 
 var csrf = require('csurf');
@@ -43,13 +48,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
+	connection.query('select * from users where username = ?', req.body.username, function(err, result) {
 		if (err) throw err;
-		var users = db.collection('users');
-		users.findOne({username:req.body.username}, function(err, doc) {
-			if (err) throw err;
-			res.json({'exist': (doc != null)});
-		});
+		res.json({'exist': (result.length != 0)});
 	});
 });
 
@@ -68,22 +69,17 @@ router.get('/login', csrfProtection, function(req, res, next) {
 });
 
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
+	connection.query('select * from users where username = ?', req.body.username, function(err, result) {
 		if (err) throw err;
-		var users = db.collection('users');
-		users.findOne({username:req.body.username}, function(err, doc) {
-			if (err) throw err;
-			if (doc != null && doc.password == SHA512(req.body.password + doc.salt).toString()) {
-				req.session.username = req.body.username;
-				req.session.name = doc.name;
-				req.session._id = doc._id;
-				res.json({'status': 'success'});
-				return;
-			} else {
-				res.json({'status': 'fail', 'err': 'invalid_value'});
-				return;
-			};
-		});
+		console.log(result);
+		if (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString()) {
+			req.session.username = req.body.username;
+			req.session.name = result[0].name;
+			req.session.pid = result[0].pid;
+			res.json({'status': 'success'});
+		} else {
+			res.json({'status': 'fail', 'err': 'invalid_value'});
+		};
 	});
 });
 
@@ -115,7 +111,7 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 	var user = {
 		name: req.body.name,
 		username: req.body.username,
-		password: SHA512(req.body.password + _salt).toString(),
+		password: PBKDF2(req.body.password, _salt, { keySize: 512/32, iterations: 200 }).toString(),
 		mail: req.body.mail,
 		phone: req.body.phone,
 		salt: _salt
@@ -128,27 +124,21 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 	};
 	verifyReCaptcha(req.body["g-recaptcha-response"], function(success) {
 		if (success) {
-			MongoClient.connect(url, function(err, db) {
+			connection.query('select * from users where username = ?', user.username, function(err, result) {
 				if (err) throw err;
-				var users = db.collection('users');
-				users.findOne({username:req.body.username}, function(err, doc) {
-					if (err) throw err;
-					if (doc == null) {
-						users.insert(user, function(err, doc) {
-							if (err) throw err;
-							res.json({'status': 'success'});
-							return;
-						});
-					} else {
-						res.json({'status': 'fail', 'err': 'duplicate_username'});
-						return;
-					}
-				});
+				if (result.length == 0) {
+					connection.query('insert into users set ?', user, function(err, result) {
+						if (err) throw err;
+						res.json({'status': 'success'});
+					});
+				} else {
+					res.json({'status': 'fail', 'err': 'duplicate_username'});
+				};
 			});
 		} else {
 			res.json({'status': 'fail', 'err': 'invalid_captcha'});
 			return;
-		}
+		};
 	});
 });
 

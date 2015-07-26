@@ -10,6 +10,7 @@ var routes = require('./routes/index');
 var project = require('./routes/project');
 var projects = require('./routes/projects');
 var user = require('./routes/user');
+var users = require('./routes/users');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use(session({
 
 app.use('/', routes);
 app.use('/user', user);
+app.use('/u', users);
 app.use('/project', project);
 app.use('/p', projects);
 

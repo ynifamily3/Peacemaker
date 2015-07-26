@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectID = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/peacemaker';
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+	host     : 'localhost',
+	user     : 'peacemaker',
+	password : 's9MxufFcuShxDaB3',
+	database : 'peacemaker'
+});
 
 var validator = require('validator');
 
@@ -36,13 +40,9 @@ function verifyReCaptcha(key, cb) {
 }
 
 router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
-	MongoClient.connect(url, function(err, db) {
+	connection.query('select * from projects where url = ?', req.body.addr, function(err, result) {
 		if (err) throw err;
-		var projects = db.collection('projects');
-		projects.findOne({url:req.body.addr}, function(err, doc) {
-			if (err) throw err;
-			res.json({'exist': (doc != null)});
-		});
+		res.json({'exist': (result.length != 0)});
 	});
 });
 
@@ -72,8 +72,7 @@ router.post('/new', parseForm, csrfProtection, function(req, res, next) {
 		name: req.body.name,
 		url: req.body.addr,
 		desc: req.body.desc,
-		admin: new ObjectID(req.session._id),
-		users: [new ObjectID(req.session._id)]
+		admin_id: req.session.pid
 	};
 	if (!validator.isAlphanumeric(req.body.addr)) {
 		res.json({'status': 'fail', 'err': 'invalid_value'});
@@ -81,22 +80,23 @@ router.post('/new', parseForm, csrfProtection, function(req, res, next) {
 	};
 	verifyReCaptcha(req.body["g-recaptcha-response"], function(success) {
 		if (success) {
-			MongoClient.connect(url, function(err, db) {
+			connection.query('select * from projects where url = ?', [req.body.url], function(err, result) {
 				if (err) throw err;
-				var projects = db.collection('projects');
-				projects.findOne({url:req.body.addr}, function(err, doc) {
-					if (err) throw err;
-					if (!doc) {
-						projects.insert(project, function(err, doc) {
-							if (err) throw err;
+				if (result.length == 0) {
+					connection.query('insert into projects set ?', project, function(err, result) {
+						if (err) throw err;
+						var entry = {
+							pid:req.session.pid,
+							id:result.insertId
+						};
+						connection.query('insert into project_entries set ?', entry, function(err, result) {
+							if (err) throw err;		
 							res.json({'status': 'success'});
-							return;
 						});
-					} else {
-						res.json({'status': 'fail', 'err': 'duplicate_url'});
-						return;
-					}
-				});
+					});
+				} else {
+					res.json({'status': 'fail', 'err': 'duplicate_url'});
+				};
 			});
 		} else {
 			res.json({'status': 'fail', 'err': 'invalid_captcha'});

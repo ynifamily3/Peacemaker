@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectID = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/peacemaker';
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+	host     : 'localhost',
+	user     : 'peacemaker',
+	password : 's9MxufFcuShxDaB3',
+	database : 'peacemaker'
+});
 
 var validator = require('validator');
 
@@ -46,20 +50,16 @@ router.get('/', function(req, res, next) {
 router.get('/dashboard', function(req, res, next) {
 	if (!req.session.username) {
 		res.redirect('/user/login');
-		return;
-	}
-	MongoClient.connect(url, function(err, db) {
-		if (err) throw err;
-		var projects = db.collection('projects');
-		projects.find({users: {$in: [new ObjectID(req.session._id)]}}).toArray(function(err, docs) {
+	} else {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, result) {
 			if (err) throw err;
 			res.render('dashboard', {
 				title: '대시보드',
 				name:req.session.name,
-				projects:docs
+				projects:result
 			});
 		});
-	});
+	};
 });
 
 module.exports = router;
