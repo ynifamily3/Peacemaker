@@ -35,10 +35,10 @@ app.use(session({
 }));
 
 app.use('/', routes);
-app.use('/user', user);
-app.use('/u', users);
-app.use('/project', project);
-app.use('/p', projects);
+app.use('/user', users);
+app.use('/u', user);
+app.use('/project', projects);
+app.use('/p', project);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
