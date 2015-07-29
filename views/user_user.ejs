@@ -1,13 +1,18 @@
 <% include layout_header %>
 <div class="col-md-6 col-md-offset-3">
 	<div class="jumbotron">
-		<h1><%= user_name %></h1>
-  	<p>가입일: <%= register_date %></p>
+		<h1 class="text-center"><%= user_name %></h1>
+  	<p class="text-center">가입일: <%= register_date %></p>
   	<% if (locals.name) { %>
-  	<p><a class="btn btn-primary" href="#" role="button">친구 신청</a></p>
+    <% if (name == user_name) { %>
+  	<p><a class="btn btn-primary btn-block" href="/user/edit/profile" role="button">프로필 수정</a></p>
+    <p><a class="btn btn-primary btn-block" href="/user/edit/pw" role="button">패스워드 변경</a></p>
   	<% } else { %>
+    <p><a class="btn btn-primary btn-block" href="#" role="button">친구 신청</a></p>
+    <% }; %>
+    <% } else { %>
   	<p>로그인하여 <%= user_name %>님과 친구가 되세요.</p>
-  	<p><a class="btn btn-primary" href="/user/login" role="button">로그인</a></p>
+  	<p><a class="btn btn-primary btn-block" href="/user/login" role="button">로그인</a></p>
   	<% }; %>
 	</div>
 </div>

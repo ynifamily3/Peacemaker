@@ -1,0 +1,65 @@
+<% include layout_header %>
+<div ng-app="profileValidation" ng-controller="profileController" class="col-md-6 col-md-offset-3">
+	<div class="page-header">
+		<h1>프로필 수정</h1>
+	</div>
+	<div class="alert alert-danger alert-invalid-value hidden" role="alert">
+		<p>패스워드가 올바르지 않습니다.</p>
+	</div>
+	<form id="profile-form" name="form" novalidate>
+		<div class="form-group">
+			<label for="mailInput">E-mail</label>
+			<input type="email" id="mailInput" class="form-control" name="mail" placeholder="E-mail" ng-model="user.mail" ng-Minlength=3 ng-Maxlength=254 ng-init="user.mail='<%= email %>'" required>
+			<br/>
+			<div ng-show="form.$sumbitted || form.mail.$touched">
+				<div class="alert alert-danger" ng-show="form.mail.$error.required" role="alert">
+					<p>E-mail 주소를 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.mail.$error.minlength || form.mail.$error.maxlength" role="alert">
+					<p>E-mail 주소는 3문자 이상, 254문자 이하여야 합니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.mail.$error.email" role="alert">
+					<p>E-mail 주소가 올바르지 않습니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="phoneInput">전화번호</label>
+			<input type="tel" id="phoneInput" class="form-control" name="phone" placeholder="전화번호" ng-model="user.phone" ng-pattern="/^[0-9]+$/" ng-Minlength=9 ng-Maxlength=12 ng-init="user.phone='<%= phone %>'" required>
+			<br/>
+			<div ng-show="form.$sumbitted || form.phone.$touched">
+				<div class="alert alert-danger" ng-show="form.phone.$error.required" role="alert">
+					<p>전화번호를 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.phone.$error.minlength || form.phone.$error.maxlength" role="alert">
+					<p>전화번호는 9문자 이상, 12문자 이하여야 합니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.phone.$invalid" role="alert">
+					<p>전화번호는 숫자로만 이루어져야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="passwordInput">패스워드 확인</label>
+			<input type="password" id="passwordInput" class="form-control" name="password" placeholder="패스워드 확인" ng-model="user.password" ng-Minlength=8 ng-Maxlength=64 required>
+			<br/>
+			<div ng-show="form.$sumbitted || form.password.$touched">
+				<div class="alert alert-danger" ng-show="form.password.$error.required" role="alert">
+					<p>패스워드를 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.password.$error.minlength || form.password.$error.maxlength" role="alert">
+					<p>패스워드는 8문자 이상, 64문자 이하여야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="g-recaptcha" data-sitekey="6Lc9rQkTAAAAANMmcu73j0W8Jo-LffN4CH0Fi8Wq"></div><br/>
+		<div class="alert alert-danger alert-invalid-captcha hidden" role="alert">
+			<p>'로봇이 아닙니다.'에 체크하지 않았습니다.</p>
+		</div>
+		<input type="hidden" name="_csrf" value="<%=csrfToken%>">
+		<div class="form-group">
+			<input type="submit" ng-disabled="form.$invalid" class="btn btn-primary" value="프로필 수정">
+		</div>
+	</form>
+</div>
+<% include layout_footer %>

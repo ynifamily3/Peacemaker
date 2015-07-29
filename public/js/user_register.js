@@ -50,3 +50,11 @@ $('#register-form').submit(function() {
 	});
 	return false;
 });
+
+$('#checkPW').click(function() {
+	if ($(this).is(':checked')) {
+		$('#pwShow').removeClass('hidden');
+	} else {
+		$('#pwShow').addClass('hidden');
+	};
+});

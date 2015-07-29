@@ -71,7 +71,6 @@ router.get('/login', csrfProtection, function(req, res, next) {
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	connection.query('select * from users where username = ?', req.body.username, function(err, result) {
 		if (err) throw err;
-		console.log(result);
 		if (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString()) {
 			req.session.username = req.body.username;
 			req.session.name = result[0].name;
@@ -140,6 +139,94 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 			return;
 		};
 	});
+});
+
+router.get('/edit/profile', csrfProtection, function(req, res, next) {
+	if (!req.session.username) {
+		res.redirect('/user');
+	} else {
+		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
+			if (err) throw err;
+			console.log(result[0]);
+			res.render('user_edit_profile', {
+				csrfToken: req.csrfToken(),
+				name: req.session.name,
+				username: req.session.username,
+				email: result[0].mail,
+				phone: result[0].phone,
+				js_b: [
+					'user_edit_profile.js'
+				],
+				extjs: [
+					'https://www.google.com/recaptcha/api.js'
+				]
+			});
+		});
+	};
+});
+
+router.post('/edit/profile', parseForm, csrfProtection, function(req, res, next) {
+	if (!validator.isEmail(req.body.mail) ||
+			!validator.isNumeric(req.body.phone)) {
+		res.json({'status': 'fail', 'err': 'invalid_value'});
+		return;
+	};
+	if (req.session.pid) {
+		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
+			if (err) throw err;
+			if (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString()) {
+				connection.query('update users set mail = ?, phone = ? where pid = ?', [req.body.mail, req.body.phone, req.session.pid], function(err, result) {
+					if (err) throw err;
+					res.json({'status': 'success'});
+				});
+			} else {
+				res.json({'status': 'fail', 'err': 'invalid_password'});
+			};
+		});
+	} else {
+		res.json({'status': 'fail', 'err': 'invalid_access'});
+	};
+});
+
+router.get('/edit/pw', csrfProtection, function(req, res, next) {
+	if (!req.session.username) {
+		res.redirect('/user');
+	} else {
+		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
+			if (err) throw err;
+			res.render('user_edit_pw', {
+				csrfToken: req.csrfToken(),
+				name: req.session.name,
+				username: req.session.username,
+				user_name: result[0].name,
+				js_b: [
+					'user_edit_pw.js'
+				],
+				extjs: [
+					'https://www.google.com/recaptcha/api.js'
+				]
+			});
+		});
+	};
+});
+
+router.post('/edit/pw', parseForm, csrfProtection, function(req, res, next) {
+	if (req.session.pid) {
+		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
+			if (err) throw err;
+			if (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString()) {
+				var newPW = PBKDF2(req.body.newpassword, result[0].salt, { keySize: 512/32, iterations: 200 }).toString();
+				connection.query('update users set password = ? where pid = ?', [newPW, req.session.pid], function(err, result) {
+					if (err) throw err;
+					res.json({'status': 'success'});
+				});
+			} else {
+				res.json({'status': 'fail', 'err': 'invalid_password'});
+			};
+		});
+	} else {
+		res.json({'status': 'fail', 'err': 'invalid_access'});
+	};
 });
 
 module.exports = router;

@@ -1,0 +1,53 @@
+<% include layout_header %>
+<div ng-app="pwValidation" ng-controller="pwController" class="col-md-6 col-md-offset-3">
+	<div class="page-header">
+		<h1>비밀번호 변경</h1>
+	</div>
+	<div class="alert alert-danger alert-invalid-value hidden" role="alert">
+		<p>패스워드가 올바르지 않습니다.</p>
+	</div>
+	<form id="pw-form" name="form" novalidate>
+		<div class="form-group">
+			<label for="passwordInput">현재 패스워드</label>
+			<input type="password" id="passwordInput" class="form-control" name="password" placeholder="현재 패스워드" ng-model="user.password" ng-Minlength=8 ng-Maxlength=64 required>
+			<br/>
+			<div ng-show="form.$sumbitted || form.password.$touched">
+				<div class="alert alert-danger" ng-show="form.password.$error.required" role="alert">
+					<p>패스워드를 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.password.$error.minlength || form.password.$error.maxlength" role="alert">
+					<p>패스워드는 8문자 이상, 64문자 이하여야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<form id="register-form" name="form" novalidate>
+		<div class="form-group">
+			<label for="passwordInput">새 패스워드</label>
+			<input type="password" id="newpasswordInput" class="form-control" name="newpassword" placeholder="새 패스워드" ng-model="user.newpassword" ng-Minlength=8 ng-Maxlength=64 required>
+			<div class="checkbox">
+				<label>
+					<input id="checkPW" type="checkbox"> 패스워드 보이기
+				</label>
+				<span id="pwShow" class="hidden">  {{user.newpassword}}</span>
+			</div>
+			<br/>
+			<div ng-show="form.$sumbitted || form.newpassword.$touched">
+				<div class="alert alert-danger" ng-show="form.newpassword.$error.required" role="alert">
+					<p>패스워드를 입력하지 않았습니다.</p>
+				</div>
+				<div class="alert alert-danger" ng-show="form.newpassword.$error.minlength || form.password.$error.maxlength" role="alert">
+					<p>패스워드는 8문자 이상, 64문자 이하여야 합니다.</p>
+				</div>
+			</div>
+		</div>
+		<div class="g-recaptcha" data-sitekey="6Lc9rQkTAAAAANMmcu73j0W8Jo-LffN4CH0Fi8Wq"></div><br/>
+		<div class="alert alert-danger alert-invalid-captcha hidden" role="alert">
+			<p>'로봇이 아닙니다.'에 체크하지 않았습니다.</p>
+		</div>
+		<input type="hidden" name="_csrf" value="<%=csrfToken%>">
+		<div class="form-group">
+			<input type="submit" ng-disabled="form.$invalid" class="btn btn-primary" value="패스워드 변경">
+		</div>
+	</form>
+</div>
+<% include layout_footer %>

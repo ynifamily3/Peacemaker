@@ -56,6 +56,7 @@ router.get('/dashboard', function(req, res, next) {
 			res.render('dashboard', {
 				title: '대시보드',
 				name:req.session.name,
+				username:req.session.username,
 				projects:result
 			});
 		});

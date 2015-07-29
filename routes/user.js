@@ -27,6 +27,7 @@ router.get('/:user', function(req, res, next) {
 		var dateString = date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월';
 		res.render('user_user', {
 			name: req.session.name,
+			username: req.session.username,
 			user_name: result[0].name,
 			register_date: dateString
 		});
