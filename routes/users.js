@@ -141,6 +141,25 @@ router.post('/register', parseForm, csrfProtection, function(req, res, next) {
 	});
 });
 
+router.get('/profile', function(req, res, next) {
+	if (!req.session.pid) {
+		res.redirect('/user');
+	} else {
+		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
+			if (err) throw err;
+			var date = new Date(result[0].register_date);
+			res.render('user_profile', {
+				user: {
+					name: req.session.name,
+					username: req.session.username,
+					pid: req.session.pid,
+					register_date: date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월'
+				},
+			});
+		});
+	};
+});
+
 router.get('/edit/profile', csrfProtection, function(req, res, next) {
 	if (!req.session.username) {
 		res.redirect('/user');
@@ -149,11 +168,14 @@ router.get('/edit/profile', csrfProtection, function(req, res, next) {
 			if (err) throw err;
 			console.log(result[0]);
 			res.render('user_edit_profile', {
+				user: {
+					name: req.session.name,
+					username: req.session.username,
+					pid: req.session.pid,
+					email: result[0].mail,
+					phone: result[0].phone
+				},
 				csrfToken: req.csrfToken(),
-				name: req.session.name,
-				username: req.session.username,
-				email: result[0].mail,
-				phone: result[0].phone,
 				js_b: [
 					'user_edit_profile.js'
 				],
@@ -195,10 +217,12 @@ router.get('/edit/pw', csrfProtection, function(req, res, next) {
 		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
 			if (err) throw err;
 			res.render('user_edit_pw', {
+				user: {
+					name: req.session.name,
+					username: req.session.username,
+					pid: req.session.pid
+				},
 				csrfToken: req.csrfToken(),
-				name: req.session.name,
-				username: req.session.username,
-				user_name: result[0].name,
 				js_b: [
 					'user_edit_pw.js'
 				],

@@ -52,6 +52,11 @@ router.get('/new', csrfProtection, function(req, res, next) {
 		return;
 	}
 	res.render('project_new', {
+		user: {
+			name: req.session.name,
+			username: req.session.username,
+			pid: req.session.pid
+		},
 		csrfToken: req.csrfToken(),
 		title: '새 프로젝트',
 		js_b: [

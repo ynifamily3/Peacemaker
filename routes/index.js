@@ -54,9 +54,12 @@ router.get('/dashboard', function(req, res, next) {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, result) {
 			if (err) throw err;
 			res.render('dashboard', {
+				user: {
+					name: req.session.name,
+					username: req.session.username,
+					pid: req.session.pid
+				},
 				title: '대시보드',
-				name:req.session.name,
-				username:req.session.username,
 				projects:result
 			});
 		});

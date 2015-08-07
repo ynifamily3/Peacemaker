@@ -1,28 +1,15 @@
 <% include layout_header %>
 <div class="col-md-8">
-	<div class="panel panel-info">
+	<div class="panel panel-default">
 		<div class="panel-heading">알림</div>
 		<div class="list-group">
 			<a href="#" class="list-group-item disabled">새로운 알림이 없습니다.</a>
 		</div>
 	</div>
-	<div class="embed-responsive embed-responsive-16by9">
-	  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/gnIZ7RMuLpU" frameborder="0" allowfullscreen></iframe>
-	</div>
 </div>
 <div class="col-md-4">
 	<div class="panel panel-default">
-		<div class="panel-heading"><%= name %>님 안녕하세요!</div>
-		<div class="panel-body">
-			<a class="btn btn-primary btn-block" href="/u/<%= username %>">프로필</a>
-			<a class="btn btn-danger btn-block" href="/user/logout">로그아웃</a>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">프로젝트</div>
-		<div class="panel-body">
-			<a class="btn btn-success btn-block" href="/project/new">신규 프로젝트</a>
-		</div>
+		<div class="panel-heading">프로젝트 <a class="btn btn-success btn-xs pull-right" href="/project/new"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 신규 프로젝트</a></div>
 		<div class="list-group">
 			<% if (projects.length) { %>
 			<% for (var i = 0; i < projects.length; i++) { %>

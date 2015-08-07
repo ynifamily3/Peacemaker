@@ -9,7 +9,7 @@
 	<form id="profile-form" name="form" novalidate>
 		<div class="form-group">
 			<label for="mailInput">E-mail</label>
-			<input type="email" id="mailInput" class="form-control" name="mail" placeholder="E-mail" ng-model="user.mail" ng-Minlength=3 ng-Maxlength=254 ng-init="user.mail='<%= email %>'" required>
+			<input type="email" id="mailInput" class="form-control" name="mail" placeholder="E-mail" ng-model="user.mail" ng-Minlength=3 ng-Maxlength=254 ng-init="user.mail='<%= user.email %>'" required>
 			<br/>
 			<div ng-show="form.$sumbitted || form.mail.$touched">
 				<div class="alert alert-danger" ng-show="form.mail.$error.required" role="alert">
@@ -25,7 +25,7 @@
 		</div>
 		<div class="form-group">
 			<label for="phoneInput">전화번호</label>
-			<input type="tel" id="phoneInput" class="form-control" name="phone" placeholder="전화번호" ng-model="user.phone" ng-pattern="/^[0-9]+$/" ng-Minlength=9 ng-Maxlength=12 ng-init="user.phone='<%= phone %>'" required>
+			<input type="tel" id="phoneInput" class="form-control" name="phone" placeholder="전화번호" ng-model="user.phone" ng-pattern="/^[0-9]+$/" ng-Minlength=9 ng-Maxlength=12 ng-init="user.phone='<%= user.phone %>'" required>
 			<br/>
 			<div ng-show="form.$sumbitted || form.phone.$touched">
 				<div class="alert alert-danger" ng-show="form.phone.$error.required" role="alert">

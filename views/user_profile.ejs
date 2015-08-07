@@ -1,0 +1,11 @@
+<% include layout_header %>
+<div class="col-md-6 col-md-offset-3">
+	<div class="jumbotron">
+		<h1 class="text-center"><%= user.name %></h1>
+  	<p class="text-center">가입일: <%= user.register_date %></p>
+  	<a class="btn btn-primary btn-block" href="/user/edit/profile" role="button">프로필 수정</a>
+    <a class="btn btn-primary btn-block" href="/user/edit/pw" role="button">패스워드 변경</a>
+    <a class="btn btn-danger btn-block" href="/user/logout">로그아웃</a>
+	</div>
+</div>
+<% include layout_footer %>
