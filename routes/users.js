@@ -54,6 +54,14 @@ router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
 	});
 });
 
+router.get('/is_logged_in', parseForm, csrfProtection, function(req, res, next) {
+	if (req.session.pid) {
+		res.send('cb({logged_in: true, name: "' + req.session.name + '", username: "' + req.session.username + '", pid: "' + req.session.pid + '"})');
+	} else {
+		res.send('cb({logged_in: false})');
+	};
+});
+
 router.get('/login', csrfProtection, function(req, res, next) {
 	if (req.session.username) {
 		res.redirect('/dashboard');
