@@ -49,9 +49,12 @@
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<% if (locals.user) { %>
+					<% if (locals.project) { %>
+					<li><a href="/dashboard"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> 대시보드</a></li>
+					<% }; %>
 					<li><a href="/user/profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <%= user.name %></a></li>
 					<% } else {  %>
-					<li><a href="/user/login">로그인</a></li>
+					<li><a href="/user/login"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> 로그인</a></li>
 					<% }; %>
 				</ul>
 			</div>
