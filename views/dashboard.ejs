@@ -1,12 +1,4 @@
 <% include layout_header %>
-<div class="col-md-8">
-	<div class="panel panel-default">
-		<div class="panel-heading">알림</div>
-		<div class="list-group">
-			<a href="#" class="list-group-item disabled">새로운 알림이 없습니다.</a>
-		</div>
-	</div>
-</div>
 <div class="col-md-4">
 	<div class="panel panel-default">
 		<div class="panel-heading">프로젝트 <a class="btn btn-success btn-xs pull-right" href="/project/new"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 신규 프로젝트</a></div>
@@ -18,6 +10,14 @@
 			<% } else { %>
 			<a href="#" class="list-group-item disabled">진행중인 프로젝트가 존재하지 않습니다.</a>
 			<% };%>
+		</div>
+	</div>
+</div>
+<div class="col-md-8">
+	<div class="panel panel-default">
+		<div class="panel-heading">알림</div>
+		<div class="list-group">
+			<a href="#" class="list-group-item disabled">새로운 알림이 없습니다.</a>
 		</div>
 	</div>
 </div>
