@@ -31,6 +31,7 @@ router.get('/:project', function(req, res, next) {
 			if (err) throw err;
 			var _project = result[0];
 			connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, _project.id], function(err, result) {
+				if (err) throw err;
 				if (result.length == 0) {
 					res.redirect('/p/' + req.params.project + '/join');
 				} else {
@@ -50,7 +51,48 @@ router.get('/:project', function(req, res, next) {
 						title: _project.name
 					});
 				};
+			});
+		});
+	};
+});
+
+router.get('/:project/calendar', function(req, res, next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, result) {
+			if (err) throw err;
+			var _project = result[0];
+			connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, _project.id], function(err, result) {
 				if (err) throw err;
+				if (result.length == 0) {
+					res.redirect('/p/' + req.params.project + '/join');
+				} else {
+					res.render('project_calendar', {
+						user: {
+							name: req.session.name,
+							username: req.session.username,
+							pid: req.session.pid
+						},
+						project: {
+							id: _project.id,
+							url: _project.url,
+							name: _project.name,
+							desc: _project.desc,
+							admin_id: _project.admin_id
+						},
+						title: _project.name,
+						js: [
+							'moment.js',
+							'fullcalendar.js',
+							'fullcalendar-ko.js',
+							'project_calendar.js'
+						],
+						css: [
+							'fullcalendar.css'
+						]
+					});
+				};
 			});
 		});
 	};
