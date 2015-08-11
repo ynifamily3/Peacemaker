@@ -1,3 +1,4 @@
+
 var express = require('express');
 var router = express.Router();
 
@@ -8,6 +9,9 @@ var connection = mysql.createConnection({
 	password : 's9MxufFcuShxDaB3',
 	database : 'peacemaker'
 });
+
+var moment = require('moment');
+moment.locale('ko');
 
 var validator = require('validator');
 
@@ -155,13 +159,12 @@ router.get('/profile', function(req, res, next) {
 	} else {
 		connection.query('select * from users where pid = ?', [req.session.pid], function(err, result) {
 			if (err) throw err;
-			var date = new Date(result[0].register_date);
 			res.render('user_profile', {
 				user: {
 					name: req.session.name,
 					username: req.session.username,
 					pid: req.session.pid,
-					register_date: date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월'
+					register_date: moment(result[0].register_date).format('LL')
 				},
 			});
 		});

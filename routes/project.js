@@ -9,6 +9,9 @@ var connection = mysql.createConnection({
 	database : 'peacemaker'
 });
 
+var moment = require('moment');
+moment.locale('ko');
+
 var validator = require('validator');
 
 var crypto = require('crypto');
@@ -58,7 +61,6 @@ router.get('/:project/join', function(req, res, next) {
 		res.redirect('/user/login');
 	} else {
 		connection.query('select * from projects where url = ?', [req.params.project], function(err, result) {
-			date = new Date(result[0].created_date);
 			if (err) throw err;
 			res.render('project_join', {
 				user: {
@@ -72,8 +74,7 @@ router.get('/:project/join', function(req, res, next) {
 					name: result[0].name,
 					desc: result[0].desc,
 					admin_id: result[0].admin_id,
-					created_date: date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월'
-
+					created_date: moment(result[0].created_date).format('LL')
 				},
 				title: result[0].name
 			});
