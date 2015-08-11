@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `desc` varchar(32) NOT NULL,
   `admin_id` int(11) NOT NULL,
   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `hangout_url` varchar(32),
   PRIMARY KEY (`id`),
   FOREIGN KEY (`admin_id`) REFERENCES `users` (`pid`),
   UNIQUE KEY `url` (`url`)
