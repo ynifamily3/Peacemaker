@@ -1,0 +1,77 @@
+<% include layout_header %>
+<% include layout_project_sidebar %>
+<div class="col-md-10">
+	<div ng-app="hangoutValidation" ng-controller="hangoutController">
+		<h1>행아웃 설정</h1>
+		<div class="alert alert-danger alert-failed hidden" ng-show="form.url.$error.required" role="alert">
+			<p>주소를 입력하지 않았습니다.</p>
+		</div>
+		<p><%= config.title %>에서 행아웃의 주소를 대신 기억합니다.</p>
+		<p>모든 프로젝트 참가자들이 손쉽게 화상 통화에 참여 할 수 있습니다.</p>
+		<br>
+		<p>아래의 버튼으로 새 행아웃을 시작한 뒤 영구 주소를 복사하여, 아래의 입력창에 붙여넣어 주세요.</p>
+		<form id="hangout-form" name="form" novalidate>
+			<div class="form-group">
+				<label for="urlInput">주소</label>
+				<input type="text" id="urlInput" class="form-control" name="url" placeholder="주소" ng-model="hangout.url" required hangout>
+				<br/>
+				<div ng-show="form.$sumbitted || form.url.$touched">
+					<div class="alert alert-danger" ng-show="form.url.$error.required" role="alert">
+						<p>주소를 입력하지 않았습니다.</p>
+					</div>
+					<div class="alert alert-danger" ng-show="!form.url.$error.required && form.url.$invalid" role="alert">
+						<p>주소가 올바르지 않습니다.</p>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="_csrf" value="<%=csrfToken%>">
+			<div class="form-group">
+				<input type="submit" ng-disabled="form.$invalid" class="btn btn-primary" value="저장">
+				<a class="btn btn-primary" href="https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=756768503179" target="_blank">새 행아웃 시작</a>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	var app = angular.module('hangoutValidation', []);
+	app.controller('hangoutController', ['$scope', function($scope) {
+		$scope.hangout = {};
+	}]);
+	app.directive('hangout', function($q, $timeout) {
+		return {
+			require: 'ngModel',
+			link: function(scope, elm, attrs, ctrl) {
+				ctrl.$asyncValidators.hangout = function(modelValue, viewValue) {
+					if (ctrl.$isEmpty(modelValue)) {
+						return $q.when();
+					}
+					var def = $q.defer();
+					$timeout(function() {
+						if ($('#urlInput')[0].value.indexOf('https://hangoutsapi.talkgadget.google.com/hangouts/_/') == 0) {
+							def.resolve();
+						} else {
+							def.reject();
+						};
+					}, 100);
+					return def.promise;
+				};
+			}
+		};
+	});
+	$('#hangout-form').submit(function() {
+		$.ajax({
+			type: 'POST',
+			url: '/p/<%= project.url %>/hangout',
+			data: $('form').serialize(),
+			success: function(data) {
+				if (data.status == 'success') {
+					window.location.replace('/p/<%= project.url %>');
+				} else {
+					$('.alert-failed').removeClass('hidden');
+				};
+			}
+		});
+		return false;
+	});
+</script>
+<% include layout_footer %>

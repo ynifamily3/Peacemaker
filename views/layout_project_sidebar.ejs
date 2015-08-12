@@ -4,7 +4,12 @@
 	<a href="#" class="list-group-item"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> 메모</a>
 	<a href="#" class="list-group-item"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> 할 일 목록</a>
 	<a href="#" class="list-group-item"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> 채팅</a>
-	<a href="https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=756768503179" class="list-group-item" target="_blank"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> 행아웃</a>
+	<% if (project.hangout_url) { %>
+	<a href="https://hangoutsapi.talkgadget.google.com/hangouts/_/<%= project.hangout_url %>" class="list-group-item" target="_blank"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> 행아웃</a>
+	<!-- https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=756768503179 -->
+	<% } else { %>
+	<a href="/p/<%= project.url %>/hangout" class="list-group-item"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> 행아웃</a>
+	<% }; %>
 	<a href="#" class="list-group-item"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> 연락처</a>
 	<a href="#" class="list-group-item"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> 설정</a>
 </div>
