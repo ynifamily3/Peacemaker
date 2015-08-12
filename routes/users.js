@@ -73,10 +73,7 @@ router.get('/login', csrfProtection, function(req, res, next) {
 	}
 	res.render('user_login', {
 		csrfToken: req.csrfToken(),
-		title: '로그인',
-		js_b: [
-			'user_login.js'
-		]
+		title: '로그인'
 	});
 });
 
@@ -107,9 +104,6 @@ router.get('/register', csrfProtection, function(req, res, next) {
 		res.render('user_register', {
 			csrfToken: req.csrfToken(),
 			title: '회원가입',
-			js_b: [
-				'user_register.js'
-			],
 			extjs: [
 				'https://www.google.com/recaptcha/api.js'
 			]
@@ -187,9 +181,6 @@ router.get('/edit/profile', csrfProtection, function(req, res, next) {
 					phone: result[0].phone
 				},
 				csrfToken: req.csrfToken(),
-				js_b: [
-					'user_edit_profile.js'
-				],
 				extjs: [
 					'https://www.google.com/recaptcha/api.js'
 				]
@@ -234,9 +225,6 @@ router.get('/edit/pw', csrfProtection, function(req, res, next) {
 					pid: req.session.pid
 				},
 				csrfToken: req.csrfToken(),
-				js_b: [
-					'user_edit_pw.js'
-				],
 				extjs: [
 					'https://www.google.com/recaptcha/api.js'
 				]

@@ -87,8 +87,7 @@ router.get('/:project/calendar', function(req, res, next) {
 						js: [
 							'moment.js',
 							'fullcalendar.js',
-							'fullcalendar-ko.js',
-							'project_calendar.js'
+							'fullcalendar-ko.js'
 						],
 						css: [
 							'fullcalendar.css'

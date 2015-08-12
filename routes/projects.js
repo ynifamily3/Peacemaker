@@ -59,9 +59,6 @@ router.get('/new', csrfProtection, function(req, res, next) {
 		},
 		csrfToken: req.csrfToken(),
 		title: '새 프로젝트',
-		js_b: [
-			'project_new.js'
-		],
 		extjs: [
 			'https://www.google.com/recaptcha/api.js'
 		]
