@@ -1,0 +1,27 @@
+<% include layout_header %>
+<% include layout_project_sidebar %>
+<div class="col-md-10 clearfix">
+	<h1>연락처</h1>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>이름</th>
+				<th>이메일</th>
+				<th>전화번호</th>
+				<th>프로젝트 관리자</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for (var i = 0; i < users.length; i++) { %>
+			<tr>
+				<td><a href="/u/<%= users[i].username %>"><%= users[i].name %></a></td>
+				<td><a href="mailto:<%= users[i].mail %>"><%= users[i].mail %></a></td>
+				<td><a href="tel:<%= users[i].phone.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") %>"><%= users[i].phone.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") %></a></td>
+				<td><% if (project.admin_id == users[i].pid) { %>O<% }; %></td>
+			</tr>
+			<% }; %>
+		</tbody>
+	</table>
+	<a class="btn btn-primary pull-right" href="/p/<%= project.url %>/contact/vcard">내보내기</a>
+</div>
+<% include layout_footer %>

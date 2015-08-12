@@ -1,0 +1,7 @@
+<% for (var i = 0; i < users.length; i++) { %>BEGIN:VCARD
+VERSION:3.0
+FN:<%= users[i].name %>
+TEL;TYPE=CELL:<%= users[i].phone.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, "$1-$2-$3") %>
+EMAIL;type=INTERNET:<%= users[i].mail %>
+END:VCARD
+<% }; %>

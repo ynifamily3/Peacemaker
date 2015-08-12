@@ -23,6 +23,10 @@ var csrfProtection = csrf({cookie: true});
 var bodyParser = require('body-parser');
 var parseForm = bodyParser.urlencoded({extended: false});
 
+function phone_format(num) {
+	return num.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
+}
+
 router.get('/:project', function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
@@ -47,6 +51,62 @@ router.get('/:project', function(req, res, next) {
 						hangout_url: result[0].hangout_url
 					},
 					title: result[0].name
+				});
+			};
+		});
+	};
+});
+
+router.get('/:project/contact', function(req, res, next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				connection.query('select * from users join project_entries on users.pid = project_entries.pid where id = ?', [result[0].id], function(err, users_result) {
+					if (err) throw err;
+					res.render('project_contact', {
+						user: {
+							name: req.session.name,
+							username: req.session.username,
+							pid: req.session.pid
+						},
+						project: {
+							id: result[0].id,
+							url: result[0].url,
+							name: result[0].name,
+							desc: result[0].desc,
+							admin_id: result[0].admin_id,
+							hangout_url: result[0].hangout_url
+						},
+						title: result[0].name,
+						users: users_result
+					});
+				});
+			};
+		});
+	};
+});
+
+router.get('/:project/contact/vcard', function(req, res, next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				connection.query('select name, phone, mail from users join project_entries on users.pid = project_entries.pid where id = ?', [result[0].id], function(err, users_result) {
+					if (err) throw err;
+					res.setHeader('Content-disposition', 'attachment; filename=export.vcf');
+					res.setHeader('Content-type', 'text/vcard');
+					res.render('project_contact_vcard', {
+						users: users_result
+					});
 				});
 			};
 		});
