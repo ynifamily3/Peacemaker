@@ -14,15 +14,18 @@
 		</div>
 		<div class="afterMessage"> ↓ 추가 메시지 : 0개 </div>
 		<div class="control">
-			<!--말할수 있는 부분-->
-			<form action="#" id="cf">
-				<input type="text" class="inputText" id="type"/>
-			</form>
 			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data" method="POST">
-				<div class="form-group">
+				<div class="form-group image-upload">
+					<label for="file">
+						<img src="/imgs/placeholder.jpg" width="40px"/>
+					</label>
 					<input type="file" id="file" name="uploadFile"/>
 				</div>
 				<!--<input class="btn btn-default" type="submit" value="업로드" />-->
+			</form>
+			<!--말할수 있는 부분-->
+			<form action="#" id="cf">
+				<input type="text" class="inputText" id="type"/>
 			</form>
 		</div>
 	</div>
