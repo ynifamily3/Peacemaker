@@ -109,6 +109,7 @@
 	</div>-->
 	<script>
 		var cnt;
+		var isUpdated = true;
 		//파일 전송 프로그레스 처리용
 		(function() {
 
@@ -118,6 +119,11 @@
 
 			$('#multiform').ajaxForm({
 				beforeSend: function() {
+					if(!isUpdated ) {
+						alert('죄송합니다. 기능상의 문제로 하나씩 업로드가 가능합니다. 취소하려면 X버튼을 눌러 업로드를 중지하세요.');
+						$(this).abort();
+					}
+					isUpdated = false;
 					++temp_ballon;
 					var className = 'ballon me tmp' + temp_ballon;
 					cnt = $("<div class='"+className+"'>파일을 전송 중입니다..<br>image.jpg (0%)</div>").appendTo('#chattingWindow .room');
@@ -141,6 +147,7 @@
 				complete: function(xhr) {
 					//status.html(xhr.responseText);
 					cnt.remove();
+					isUpdated = true;
 					var s = JSON.parse(xhr.responseText);
 					socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
 				}
