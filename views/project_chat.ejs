@@ -71,43 +71,6 @@
 			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
 		$('#type').val("");
 	});
-	/*
-		$("#multiform").submit(function(e)
-		{
-			++temp_ballon;
-			var className = 'ballon me tmp' + temp_ballon;
-			$('#chattingWindow .room').append("<div class='"+className+"'>파일을 전송 중입니다..</div>");
-			var formObj = $(this);
-			var formURL = formObj.attr("action");
-			var formData = new FormData(this);
-			$.ajax({
-				url: formURL,
-				type: 'POST',
-				data:  formData,
-				mimeType:"multipart/form-data",
-				contentType: false,
-				cache: false,
-				processData:false,
-				success: function(data, textStatus, jqXHR)
-				{
-				var s = JSON.parse(data);
-				socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
-			},
-			error: function(jqXHR, textStatus, errorThrown)
-			{
-				alert('파일전송에 실패했습니다...');
-			}
-		});
-		e.preventDefault(); //Prevent Default action.
-	});
-	*/
-</script>
-	<!--
-	<div class="progress">
-		<div class="bar"></div >
-		<div class="percent">0%</div >
-	</div>-->
-	<script>
 		var cnt;
 		var isUpdated = true;
 		//파일 전송 프로그레스 처리용
