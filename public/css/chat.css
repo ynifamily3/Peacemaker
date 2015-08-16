@@ -24,6 +24,7 @@
 	border: 1px solid #e8e8e8;
 	background-color: rgba(0, 0, 0, 0);
 	font-family: sans-serif;
+	padding-left:60px;
 }
 
 .ballon {
@@ -73,4 +74,9 @@
 .image-upload > input
 {
 	display: none;
+}
+
+.image-upload {
+	position:absolute;
+
 }
