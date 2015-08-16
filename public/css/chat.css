@@ -1,0 +1,72 @@
+#chattingWindow .room {
+	width:100%;
+	min-height:480px;
+	height: 100%;
+	margin:auto;
+	padding:20px;
+	background-color: #C2EBFF;
+	overflow-y:scroll;
+	box-sizing: border-box;
+}
+
+#chattingWindow .control {
+	background-color: #ffffff;
+	width:100%;
+	margin:0;
+	padding:0;
+}
+
+#chattingWindow .inputText {
+	width:100%;
+	height:50px;
+	font-size:12pt;
+	outline: 0;
+	border: 1px solid #e8e8e8;
+	background-color: rgba(0, 0, 0, 0);
+	font-family: sans-serif;
+}
+
+.ballon {
+	animation:TNU 0.5s;
+	background-color: #daffc6;
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom:10px;
+	width:55%;
+	padding: 10px;
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+
+.me {
+	animation:CNU 0.5s;
+	margin-left:45%;
+	background-color: #fffbee;
+	clear:right;
+}
+
+.system {
+	margin-bottom:10px;
+}
+
+.afterMessage {
+	position:absolute;
+	text-align:center;
+	width:640px;
+	top:78%;
+	height:30px;
+	padding-top:5px;
+	overflow:hidden;
+	display:none;
+	background-color:rgba(218, 255, 102, 0.5);
+}
+
+@keyframes CNU {
+	0% {opacity:0;margin-right:20px;}
+	100% {opacity:1;margin-right:10px;}
+}
+
+@keyframes TNU {
+	0% {opacity:0;margin-left:0px;}
+	100% {opacity:1;margin-left:10px;}
+}

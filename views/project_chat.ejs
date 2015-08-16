@@ -1,0 +1,100 @@
+<% include layout_header %>
+<% include layout_project_sidebar %>
+<script>
+	var room = '<%=room%>';
+	var scr_num = 0; //스크롤할 곳 추적용
+</script>
+<div class="col-md-10">
+	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
+	<div id="chattingWindow">
+		<div class="room">
+			<!--대화 내용-->
+		</div>
+		<div class="afterMessage"> ↓ 추가 메시지 : 0개 </div>
+		<div class="control">
+			<!--말할수 있는 부분-->
+			<form action="#" id="cf">
+				<input type="text" class="inputText" id="type"/>
+			</form>
+			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data">
+				<div class="form-group">
+					<input type="file" id="file" name="uploadFile"/>
+				</div>
+				<input class="btn btn-default" type="submit" value="업로드" />
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+	$('body').ready(function () {$('#type').focus();});
+	$('body').keydown(function () {$('#type').focus();});
+		var socket = io.connect('http://localhost:81');
+		socket.emit('join_the_room', {room:'<%=room%>', name:'<%= user.name %>'});
+		socket.on('receive_msg', function(data) {
+			++scr_num;
+			var className = "ballon me " + scr_num;
+		//$('.j-message').append(data.message + '<br>');
+		if(data.rel == 'me') {
+			className = "ballon me scr_offset" + scr_num;
+		}
+		else if(data.rel == 'another') {
+			className = "ballon scr_offset" + scr_num;
+		}
+		else {
+			className = "system scr_offset" + scr_num;
+		}
+		if(data.type == "File") {
+			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
+			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a target='_blank' href='/files/"+data.path+"?realname="+data.fileName+"'>"+data.fileName+"</a></div>");
+		} else {
+			$('#chattingWindow .room').append("<div class='"+className+"'>"+data.message+"</div>");
+		}
+
+
+		//적절한 위치로 스크롤
+		$('.scr_offset'+scr_num).ScrollTo({
+			duration: 500,
+			easing: 'linear'
+		});
+	});
+
+		$('#cf').submit(function (event) {
+			event.preventDefault();
+			if($('#type').val() == "")
+				return;
+			var str = $('#type').val();
+			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
+		//socket.in('<%=room%>').emit('헉', {message:str});
+		$('#type').val("");
+	});
+		$("#multiform").submit(function(e)
+		{
+
+			var formObj = $(this);
+			var formURL = formObj.attr("action");
+			var formData = new FormData(this);
+			$.ajax({
+				url: formURL,
+				type: 'POST',
+				data:  formData,
+				mimeType:"multipart/form-data",
+				contentType: false,
+				cache: false,
+				processData:false,
+				success: function(data, textStatus, jqXHR)
+				{
+				//alert(data);
+				var s = JSON.parse(data);
+				//message:'<a target="_blank" href="../uploads/'+ s.filename+'">'+s.originalname+'</a>'
+				socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
+			},
+			error: function(jqXHR, textStatus, errorThrown)
+			{
+				alert('파일전송에 실패했습니다...');
+			}
+		});
+		e.preventDefault(); //Prevent Default action.
+		e.unbind();
+	});
+</script>
+</div>
+<% include layout_footer %>

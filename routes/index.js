@@ -20,6 +20,9 @@ var csrfProtection = csrf({cookie: true});
 var bodyParser = require('body-parser');
 var parseForm = bodyParser.urlencoded({extended: false});
 
+var multer = require('multer');
+var upload = multer({dest: __dirname + '/../public/uploads/'});
+
 var https = require('https');
 var SECRET = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
 function verifyReCaptcha(key, cb) {
@@ -64,6 +67,20 @@ router.get('/dashboard', function(req, res, next) {
 			});
 		});
 	};
+});
+
+router.post('/files', upload.single('uploadFile'), function(req, res) {
+	res.writeHead(200);
+	console.log(req.file);
+	res.end(JSON.stringify(req.file));
+});
+
+router.get('/files/:id', function(req, res) {
+	var filename = req.params.id;
+	var realname = req.query.realname;
+	filepath = __dirname + '/../public/uploads/' + filename;
+	console.log(filepath);
+	res.download(filepath, realname);
 });
 
 module.exports = router;
