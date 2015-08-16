@@ -24,7 +24,6 @@ io.sockets.on('connection',function(socket) {
 		socket.emit('receive_msg', {id:'운영자', message:'<b> SYSTEM : 채팅에 접속되었습니다.</b>'});
 		socket.emit('receive_msg', {message:'<center><b> ★★'+data.name+'님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속했습니다. (자기자신)
 		socket.in(data.room).emit('receive_msg', {message:'<center><b> ★★'+data.name+'님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속했습니다. (브로드캐스팅)
-		console.log('조인 더 룸' + data.room);
 	});
 	socket.on('sendMessage', function(data) {
 		if(data.type == 'File') {
@@ -32,7 +31,6 @@ io.sockets.on('connection',function(socket) {
 			socket.emit('receive_msg', data); //자신클라이언트한테 이밋한다.
 			data.rel = 'another';
 			socket.in(data.room).emit('receive_msg', data); //타인클라이언트 (룸)한테 이밋한다.
-			console.log(data.message);
 		} else {
 			data.message = htmlspecialchars(data.message);
 			data.rel = 'me';
@@ -40,7 +38,6 @@ io.sockets.on('connection',function(socket) {
 			data.rel = 'another';
 			data.message = '<b>' + data.name + ' : </b>' +  data.message;
 			socket.in(data.room).emit('receive_msg', data); //타인클라이언트 (룸)한테 이밋한다.
-			console.log(data.message);
 		}
 	});
 });

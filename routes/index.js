@@ -48,13 +48,6 @@ router.get('/', function(req, res, next) {
 		res.redirect('/dashboard');
 	} else {
 		res.render('index');
-		/*
-		connection.query('insert into dummy (google) VALUES (\'미즈엘\')', function(err, result) {
-			if (err) throw err;
-			//res.json({'status': 'success'});
-			console.log("암걸릴거같다.");
-		});
-		*/
 	}
 });
 
@@ -78,29 +71,31 @@ router.get('/dashboard', function(req, res, next) {
 });
 
 router.post('/files', upload.single('uploadFile'), function(req, res) {
-	res.writeHead(200);
-	console.log(req.file);
-	var query = "INSERT INTO `peacemaker`.`files` (`path`, `original`, `size`, `allow_project`) VALUES ('"+req.file.filename+"', '"+req.file.originalname+"', '"+req.file.size+"', '-1')";
-	connection.query(query, [req.session.pid], function(err, result) {
+	var file = {
+		path: req.file.filename,
+		original: req.file.originalname,
+		size: req.file.size,
+		allow_project: -1
+	};
+	connection.query('insert into files set ?', file, function(err, result) {
 		if (err) throw err;
-		res.end(JSON.stringify(req.file));
+		res.json(req.file);
 	});
 });
 
 router.get('/files/:id', function(req, res) {
 	var filename = req.params.id;
 	connection.query('select original from files where path = ?', [filename], function(err, result) {
-		if (err) {
-			res.writeHead(404);
-			res.end("<h1>꺅 에러에요!</h1>");
+		if (err) throw err;
+		if(result.length) {
+			filepath = __dirname + '/../public/uploads/' + filename;
+			res.download(filepath, result[0].original);
 		} else {
-			if(!result[0]) {
-				res.writeHead(404);
-				res.end("<h1>꺅 에러에요!</h1>");
-			} else {
-				filepath = __dirname + '/../public/uploads/' + filename;
-				res.download(filepath, result[0].original);
-			}
+			res.status(404);
+			res.render('error', {
+				message: 'Not Found',
+				error: {}
+			});
 		}
 	});
 });
