@@ -1,4 +1,4 @@
 *.ejs
 .git/*
 nohup.out
-public/uploads/*
+**/public/uploads/**
