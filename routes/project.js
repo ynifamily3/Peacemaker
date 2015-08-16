@@ -161,6 +161,10 @@ router.get('/:project/chat', function(req, res, next) {
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
+				var ws_url = 'node.niceb5y.net';
+				if (process.env.NODE_ENV != 'production') {
+					ws_url = 'localhost';
+				}
 				res.render('project_chat', {
 					user: {
 						name: req.session.name,
@@ -177,6 +181,7 @@ router.get('/:project/chat', function(req, res, next) {
 					},
 					title: result[0].name,
 					room: result[0].id,
+					ws_addr: ws_url,
 					js: [
 						'jquery-scrollto.js',
 						'socket.io.js',
