@@ -1,13 +1,10 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
-
-<script src="http://malsup.github.com/jquery.form.js"></script>
-
-
 <script>
 	var room = '<%=room%>';
 	var scr_num = 0; //스크롤할 곳 추적용
 	var temp_ballon = -1; //파일첨부 로딩창 추적용
+	var thumbnail; //썸네일 이미지 저장소
 </script>
 <div class="col-md-10">
 	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
@@ -25,7 +22,7 @@
 				<div class="form-group">
 					<input type="file" id="file" name="uploadFile"/>
 				</div>
-				<input class="btn btn-default" type="submit" value="업로드" />
+				<!--<input class="btn btn-default" type="submit" value="업로드" />-->
 			</form>
 		</div>
 	</div>
@@ -49,7 +46,7 @@
 		}
 		if(data.type == "File") {
 			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
-			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a target='_blank' href='/files/"+data.path+"?realname="+data.fileName+"'>"+data.fileName+"</a></div>");
+			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a target='_blank' href='/files/"+data.path+"'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> "+data.fileName+"</a></div>");
 		} else {
 			$('#chattingWindow .room').append("<div class='"+className+"'>"+data.message+"</div>");
 		}
@@ -70,7 +67,8 @@
 			var str = $('#type').val();
 			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
 		$('#type').val("");
-	});
+		});
+
 		var cnt;
 		var isUpdated = true;
 		//파일 전송 프로그레스 처리용
@@ -86,6 +84,9 @@
 						alert('죄송합니다. 기능상의 문제로 하나씩 업로드가 가능합니다. 취소하려면 X버튼을 눌러 업로드를 중지하세요.');
 						$(this).abort();
 					}
+					$("form").each(function() {
+						if(this.id == "multiform") this.reset();
+					});
 					isUpdated = false;
 					++temp_ballon;
 					var className = 'ballon me tmp' + temp_ballon;
@@ -97,7 +98,7 @@
 				},
 				uploadProgress: function(event, position, total, percentComplete) {
 					var percentVal = percentComplete + '%';
-					cnt.html('파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
+					cnt.html('<img src="'+thumbnail+'" width="50"/> 파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
 					//bar.width(percentVal)
 					//percent.html(percentVal);
 				},
@@ -117,6 +118,28 @@
 			});
 
 		})();
+
+
+	if (window.FileReader) {
+		function handleFileSelect(evt) {
+			var files = evt.target.files;
+			var f = files[0];
+			var reader = new FileReader();
+
+			reader.onload = (function(theFile) {
+				return function(e) {
+					//document.getElementById('list').innerHTML = ['<img src="', e.target.result,'" title="', theFile.name, '" width="50"/>'].join('');
+					thumbnail = e.target.result;
+					$("#multiform").submit();
+				};
+			})(f);
+
+			reader.readAsDataURL(f);
+		}
+	} else {
+		alert('This browser does not support FileReader');
+	}
+	document.getElementById('file').addEventListener('change', handleFileSelect, false);
 	</script>
 
 </div>

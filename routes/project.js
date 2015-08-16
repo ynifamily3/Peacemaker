@@ -179,7 +179,8 @@ router.get('/:project/chat', function(req, res, next) {
 					room: result[0].id, //적절한 대응이 필요해 보인다.
 					js: [
 						'jquery-scrollto.js',
-						'socket.io.js'
+						'socket.io.js',
+						'jquery.form.js'
 					],
 					css: [
 						'chat.css'

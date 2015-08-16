@@ -80,15 +80,29 @@ router.get('/dashboard', function(req, res, next) {
 router.post('/files', upload.single('uploadFile'), function(req, res) {
 	res.writeHead(200);
 	console.log(req.file);
-	res.end(JSON.stringify(req.file));
+	var query = "INSERT INTO `peacemaker`.`files` (`path`, `original`, `size`, `allow_project`) VALUES ('"+req.file.filename+"', '"+req.file.originalname+"', '"+req.file.size+"', '-1')";
+	connection.query(query, [req.session.pid], function(err, result) {
+		if (err) throw err;
+		res.end(JSON.stringify(req.file));
+	});
 });
 
 router.get('/files/:id', function(req, res) {
 	var filename = req.params.id;
-	var realname = req.query.realname;
-	filepath = __dirname + '/../public/uploads/' + filename;
-	console.log(filepath);
-	res.download(filepath, realname);
+	connection.query('select original from files where path = ?', [filename], function(err, result) {
+		if (err) {
+			res.writeHead(404);
+			res.end("<h1>꺅 에러에요!</h1>");
+		} else {
+			if(!result[0]) {
+				res.writeHead(404);
+				res.end("<h1>꺅 에러에요!</h1>");
+			} else {
+				filepath = __dirname + '/../public/uploads/' + filename;
+				res.download(filepath, result[0].original);
+			}
+		}
+	});
 });
 
 module.exports = router;
