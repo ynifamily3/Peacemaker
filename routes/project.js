@@ -176,7 +176,7 @@ router.get('/:project/chat', function(req, res, next) {
 						hangout_url: result[0].hangout_url
 					},
 					title: result[0].name,
-					room: result[0].id,
+					room: result[0].id, //적절한 대응이 필요해 보인다.
 					js: [
 						'jquery-scrollto.js',
 						'socket.io.js'

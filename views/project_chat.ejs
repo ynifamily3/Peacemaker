@@ -1,8 +1,13 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
+
+<script src="http://malsup.github.com/jquery.form.js"></script>
+
+
 <script>
 	var room = '<%=room%>';
 	var scr_num = 0; //스크롤할 곳 추적용
+	var temp_ballon = -1; //파일첨부 로딩창 추적용
 </script>
 <div class="col-md-10">
 	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
@@ -16,7 +21,7 @@
 			<form action="#" id="cf">
 				<input type="text" class="inputText" id="type"/>
 			</form>
-			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data">
+			<form name="multiform" id="multiform" action="../../files" enctype="multipart/form-data" method="POST">
 				<div class="form-group">
 					<input type="file" id="file" name="uploadFile"/>
 				</div>
@@ -57,18 +62,21 @@
 		});
 	});
 
+
 		$('#cf').submit(function (event) {
 			event.preventDefault();
 			if($('#type').val() == "")
 				return;
 			var str = $('#type').val();
 			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
-		//socket.in('<%=room%>').emit('헉', {message:str});
 		$('#type').val("");
 	});
+	/*
 		$("#multiform").submit(function(e)
 		{
-
+			++temp_ballon;
+			var className = 'ballon me tmp' + temp_ballon;
+			$('#chattingWindow .room').append("<div class='"+className+"'>파일을 전송 중입니다..</div>");
 			var formObj = $(this);
 			var formURL = formObj.attr("action");
 			var formData = new FormData(this);
@@ -82,9 +90,7 @@
 				processData:false,
 				success: function(data, textStatus, jqXHR)
 				{
-				//alert(data);
 				var s = JSON.parse(data);
-				//message:'<a target="_blank" href="../uploads/'+ s.filename+'">'+s.originalname+'</a>'
 				socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
 			},
 			error: function(jqXHR, textStatus, errorThrown)
@@ -93,8 +99,55 @@
 			}
 		});
 		e.preventDefault(); //Prevent Default action.
-		e.unbind();
 	});
+	*/
 </script>
+	<!--
+	<div class="progress">
+		<div class="bar"></div >
+		<div class="percent">0%</div >
+	</div>-->
+	<script>
+		var cnt;
+		//파일 전송 프로그레스 처리용
+		(function() {
+
+			//var bar = $('.bar');
+			//var percent = $('.percent');
+			//var status = $('#status');
+
+			$('#multiform').ajaxForm({
+				beforeSend: function() {
+					++temp_ballon;
+					var className = 'ballon me tmp' + temp_ballon;
+					cnt = $("<div class='"+className+"'>파일을 전송 중입니다..<br>image.jpg (0%)</div>").appendTo('#chattingWindow .room');
+					//status.empty();
+					//var percentVal = '0%';
+					//bar.width(percentVal)
+					//percent.html(percentVal);
+				},
+				uploadProgress: function(event, position, total, percentComplete) {
+					var percentVal = percentComplete + '%';
+					cnt.html('파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
+					//bar.width(percentVal)
+					//percent.html(percentVal);
+				},
+				success: function() {
+					var percentVal = '100%';
+					cnt.html('전송이 완료되었어요!');
+					//bar.width(percentVal)
+					//percent.html(percentVal);
+				},
+				complete: function(xhr) {
+					//status.html(xhr.responseText);
+					cnt.remove();
+					var s = JSON.parse(xhr.responseText);
+					socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
+				}
+			});
+
+		})();
+	</script>
+
 </div>
 <% include layout_footer %>
