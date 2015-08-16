@@ -5,6 +5,7 @@ var router = express.Router();
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
+	port	 : 3306,
 	user     : 'peacemaker',
 	password : 's9MxufFcuShxDaB3',
 	database : 'peacemaker'
@@ -80,7 +81,7 @@ router.get('/login', csrfProtection, function(req, res, next) {
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	connection.query('select * from users where username = ?', req.body.username, function(err, result) {
 		if (err) throw err;
-		if (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString()) {
+		if (result.length && (result[0].password == PBKDF2(req.body.password, result[0].salt, { keySize: 512/32, iterations: 200 }).toString())) {
 			req.session.username = req.body.username;
 			req.session.name = result[0].name;
 			req.session.pid = result[0].pid;

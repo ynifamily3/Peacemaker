@@ -4,6 +4,7 @@ var router = express.Router();
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
+	port	 : 3306,
 	user     : 'peacemaker',
 	password : 's9MxufFcuShxDaB3',
 	database : 'peacemaker'
@@ -47,6 +48,13 @@ router.get('/', function(req, res, next) {
 		res.redirect('/dashboard');
 	} else {
 		res.render('index');
+		/*
+		connection.query('insert into dummy (google) VALUES (\'미즈엘\')', function(err, result) {
+			if (err) throw err;
+			//res.json({'status': 'success'});
+			console.log("암걸릴거같다.");
+		});
+		*/
 	}
 });
 

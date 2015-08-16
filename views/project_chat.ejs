@@ -27,7 +27,7 @@
 	<script type="text/javascript">
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
-		var socket = io.connect('http://node.niceb5y.net:81');
+		var socket = io.connect('ws://localhost:81');
 		socket.emit('join_the_room', {room:'<%=room%>', name:'<%= user.name %>'});
 		socket.on('receive_msg', function(data) {
 			++scr_num;
