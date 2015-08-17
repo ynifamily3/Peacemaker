@@ -26,6 +26,15 @@ io.sockets.on('connection',function(socket) {
 		socket.in(data.room).emit('receive_msg', {message:'<center><b> ★★'+data.name+'님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속했습니다. (브로드캐스팅)
 	});
 	socket.on('sendMessage', function(data) {
+
+		var sqldata = {
+			project_id:1,
+			type:'PLAINTEXT',
+			content:'ㅇㅇ',
+			time:'ㅇㅇ',
+			writer:'00'
+		};
+
 		if(data.type == 'File') {
 			data.rel = 'me';
 			socket.emit('receive_msg', data); //자신클라이언트한테 이밋한다.
