@@ -49,7 +49,7 @@
 		}
 		if(data.type == "File") {
 			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
-			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a target='_blank' href='/files/"+data.path+"'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> "+data.fileName+"</a></div>");
+			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a href='/files/"+data.path+"'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> "+data.fileName+"</a></div>");
 		} else {
 			$('#chattingWindow .room').append("<div class='"+className+"'>"+data.message+"</div>");
 		}
