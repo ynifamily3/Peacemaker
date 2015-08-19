@@ -100,4 +100,9 @@ router.get('/files/:id', function(req, res) {
 	});
 });
 
+router.get('/about', function(req, res) {
+	"use strict";
+	res.render('about');
+});
+
 module.exports = router;
