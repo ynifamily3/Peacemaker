@@ -1,0 +1,32 @@
+.color-pickers {
+    margin:0 -5px;
+    overflow:hidden;
+}
+.color-pick {
+    float:left;
+    width:30px;
+    height:30px;
+    margin:0 5px;
+    border-radius:3px;
+    cursor: pointer;
+}
+
+.color-pickers .darkblue {
+    background-color:#337ab7;
+}
+
+.color-pickers .green {
+    background-color:#5cb85c;
+}
+
+.color-pickers .yellow {
+    background-color:#f0ad4e;
+}
+
+.color-pickers .red {
+    background-color:#d9534f;
+}
+
+.color-pickers .blue {
+    background-color:#5bc0de;
+}

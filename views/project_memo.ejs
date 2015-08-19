@@ -1,9 +1,43 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
-<div class="col-md-10">
-	메모장
-</div>
-<script>
 
-</script>
+<div class="col-md-10" ng-app>
+	<h1>메모장</h1>
+	<label class="sr-only" for="inputMemo">메모 내용 추가</label>
+	<input type="text" id="inputMemo" class="form-control" aria-describedby="helpBlock" ng-model="memocontext" ng-maxlength="140" placeholder="메모할 내용을 입력해 주세요" maxlength="140">
+	<p class="text-right">{{memocontext.length||0}}/140</p>
+	<div class="color-pickers">
+		<div class="color-pick darkblue" onclick="s('darkblue')"></div>
+		<div class="color-pick green" onclick="s('green')"></div>
+		<div class="color-pick yellow" onclick="s('yellow')"></div>
+		<div class="color-pick red" onclick="s('red')"></div>
+		<div class="color-pick blue" onclick="s ('blue')"></div>
+	</div>
+	<table>
+		<tr>
+			<td>메모~</td>
+			<td>2</td>
+			<td>3</td>
+			<td>4</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+			<td>4</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+			<td>4</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+			<td>4</td>
+		</tr>
+	</table>
+</div>
 <% include layout_footer %>

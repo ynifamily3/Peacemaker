@@ -311,13 +311,23 @@ router.get('/:project/memo', function(req, res, next) {
                     admin_id: res2[0].admin_id,
                     hangout_url: res2[0].hangout_url
                 },
-                title: res2[0].name
+                title: res2[0].name,
+                js: [
+                    'memo.js'
+                ],
+                css: [
+                    'memo.css'
+                ]
             });
             return;
         }
         res.writeHead(200, {'content-type':'text/html'});
         res.end('<h1>접근할 수 없는 포틀릿입니다.</h1>');
     });
+});
+
+router.get('/:project/memo', function(req, res, next) {
+
 });
 
 module.exports = router;

@@ -46,7 +46,7 @@ function verifyReCaptcha(key, cb) {
 router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
     connection.query('select * from projects where url = ?', req.body.addr, function(err, result) {
         if (err) throw err;
-        res.json({'exist': (result.length != 0)});
+        res.json({'exist': (result.length !== 0)});
     });
 });
 
