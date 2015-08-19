@@ -294,8 +294,7 @@ router.get('/:project/memo', function(req, res, next) {
         res.redirect('/user/login');
         return;
     }
-    connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, res2) {
-        if (err) { throw err; }
+    connection.query('select * from projects where url = ?', [req.params.project], function(err, res2) {
         if(res2.length) {
             res.render('project_memo', {
                 user: {
@@ -321,12 +320,40 @@ router.get('/:project/memo', function(req, res, next) {
             });
             return;
         }
-        res.writeHead(200, {'content-type':'text/html'});
-        res.end('<h1>접근할 수 없는 포틀릿입니다.</h1>');
+        else {
+            res.writeHead(200, {'content-type':'text/html'});
+            res.end('<h1>접근할 수 없는 포틀릿입니다.</h1>');
+        }
     });
+
 });
 
-router.get('/:project/memo', function(req, res, next) {
+router.post('/:project/memo', function(req, res, next) {
+    "use strict";
+    if (!req.session.name) {
+        res.redirect('/user/login');
+        return;
+    }
+    connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, req.body.project], function(err, res2) {
+        if(res2.length) {
+            var data = {
+                project : req.body.project,
+                color : req.body.color,
+                is_finished : false,
+                writer : ""+req.session.pid,
+                content : req.body.content
+            };
+            connection.query('insert into memo_content set ?', data, function(err, result) {
+                if (err) {throw err;}
+                res.writeHead(200, {'content-type' : 'text/html'});
+                res.end(JSON.stringify(data));
+            });
+        } else {
+            res.writeHead(200, {'content-type':'text/html'});
+            res.end('접근할 수 없는 포틀릿입니다.');
+        }
+    });
+
 
 });
 

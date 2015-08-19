@@ -1,5 +1,14 @@
 var selected = 'blue';
-$('body').ready(function () {$('#inputMemo').focus();$('body').keydown(function () {$('#inputMemo').focus();}); $('.blue').css('border', '3px solid');});
+$('body').ready(function () {$('#inputMemo').focus();$('body').keydown(function () {$('#inputMemo').focus();}); $('.blue').css('border', '3px solid'); $('#memojang').submit(function (event) {
+    event.preventDefault();
+    if($('#inputMemo').val() !== "") {
+        $.post("./memo", { project:$('#project').val(), color: selected, content: $('#inputMemo').val() })
+            .done(function(data) {
+                $('#inputMemo').val('');
+                alert(data);
+            });
+    }
+});});
 function s(v) {
     $('.darkblue').css('border', 'none');
     $('.green').css('border', 'none');
