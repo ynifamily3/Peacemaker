@@ -53,7 +53,7 @@ router.get('/:project', function(req, res, next) {
                     },
                     title: result[0].name
                 });
-            };
+            }
         });
     };
 });
@@ -297,8 +297,22 @@ router.get('/:project/memo', function(req, res, next) {
     connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, res2) {
         if (err) { throw err; }
         if(res2.length) {
-            res.writeHead(200, {'content-type':'text/html'});
-            res.end('<h1>메모장</h1>');
+            res.render('project_memo', {
+                user: {
+                    name: req.session.name,
+                    username: req.session.username,
+                    pid: req.session.pid
+                },
+                project: {
+                    id: res2[0].id,
+                    url: res2[0].url,
+                    name: res2[0].name,
+                    desc: res2[0].desc,
+                    admin_id: res2[0].admin_id,
+                    hangout_url: res2[0].hangout_url
+                },
+                title: res2[0].name
+            });
             return;
         }
         res.writeHead(200, {'content-type':'text/html'});
