@@ -231,7 +231,7 @@ router.get('/edit/pw', csrfProtection, function(req, res, next) {
 				]
 			});
 		});
-	};
+	}
 });
 
 router.post('/edit/pw', parseForm, csrfProtection, function(req, res, next) {

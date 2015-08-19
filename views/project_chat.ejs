@@ -1,5 +1,6 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
+
 <script>
 	var room = '<%=room%>';
 	var scr_num = 0; //스크롤할 곳 추적용
@@ -33,11 +34,14 @@
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
 		var socket = io.connect('ws://<%= ws_addr %>:81');
-		socket.emit('join_the_room', {room:'<%=room%>', name:'<%= user.name %>'});
+
+		socket.emit('join_the_room', {room:'<%=room%>', auth:'<%=auth_token%>', name:'<%=user.name%>'});
+
 		socket.on('receive_msg', function(data) {
+			//서버 측에서 PUSH 가 들어오면.
 			++scr_num;
 			var className = "ballon me " + scr_num;
-		//$('.j-message').append(data.message + '<br>');
+
 		if(data.rel == 'me') {
 			className = "ballon me scr_offset" + scr_num;
 		}
@@ -50,6 +54,8 @@
 		if(data.type == "File") {
 			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
 			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a href='/files/"+data.path+"'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> "+data.fileName+"</a></div>");
+		} else if(data.type == "notification") {
+			$('#chattingWindow .room').append("<div class='"+className+" .notification'>"+data.message+"</div>");
 		} else {
 			$('#chattingWindow .room').append("<div class='"+className+"'>"+data.message+"</div>");
 		}
