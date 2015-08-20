@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `files` (
   `allow_project` INT(10) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
-CREATE TABLE `peacemaker`.`chatting_content` (
+CREATE TABLE IF NOT EXISTS `chatting_content` (
   `num` INT NOT NULL,
   `project_id` INT NULL,
   `type` VARCHAR(10) NULL,
@@ -59,7 +59,7 @@ CREATE TABLE `peacemaker`.`chatting_content` (
   UNIQUE INDEX `num_UNIQUE` (`num` ASC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
-CREATE TABLE `peacemaker`.`memo_content` (
+CREATE TABLE IF NOT EXISTS `memo_content` (
   `memo_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `project` INT NOT NULL,
   `color` VARCHAR(10) NULL,
@@ -68,4 +68,4 @@ CREATE TABLE `peacemaker`.`memo_content` (
   `content` VARCHAR(300) NULL,
   PRIMARY KEY (`memo_id`) ,
   UNIQUE INDEX `memo_id_UNIQUE` (`memo_id` ASC)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

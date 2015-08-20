@@ -1,4 +1,4 @@
-CREATE TABLE `peacemaker`.`chatting_content` (
+CREATE TABLE IF NOT EXISTS `chatting_content` (
   `num` INT NOT NULL,
   `project_id` INT NULL,
   `type` VARCHAR(10) NULL,
