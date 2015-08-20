@@ -88,7 +88,7 @@ router.get('/files/:id', function(req, res) {
 	connection.query('select original from files where path = ?', [filename], function(err, result) {
 		if (err) throw err;
 		if(result.length) {
-			filepath = __dirname + '/../public/uploads/' + filename;
+			var filepath = __dirname + '/../public/uploads/' + filename;
 			res.download(filepath, result[0].original);
 		} else {
 			res.status(404);
