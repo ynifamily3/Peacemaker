@@ -55,8 +55,7 @@ CREATE TABLE IF NOT EXISTS `chatting_content` (
   `content` VARCHAR(256) NULL,
   `time` VARCHAR(45) NULL,
   `writer` VARCHAR(45) NULL,
-  PRIMARY KEY (`num`) ,
-  UNIQUE INDEX `num_UNIQUE` (`num` ASC)
+  PRIMARY KEY (`num`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `memo_content` (
@@ -66,6 +65,5 @@ CREATE TABLE IF NOT EXISTS `memo_content` (
   `is_finished` INT NULL,
   `writer` INT NULL,
   `content` VARCHAR(300) NULL,
-  PRIMARY KEY (`memo_id`) ,
-  UNIQUE INDEX `memo_id_UNIQUE` (`memo_id` ASC)
+  PRIMARY KEY (`memo_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

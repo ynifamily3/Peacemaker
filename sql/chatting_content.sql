@@ -5,6 +5,5 @@ CREATE TABLE IF NOT EXISTS `chatting_content` (
   `content` VARCHAR(256) NULL,
   `time` VARCHAR(45) NULL,
   `writer` VARCHAR(45) NULL,
-  PRIMARY KEY (`num`) ,
-  UNIQUE INDEX `num_UNIQUE` (`num` ASC)
+  PRIMARY KEY (`num`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
