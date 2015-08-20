@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
 	port     : 3306,
@@ -67,7 +67,7 @@ router.get('/dashboard', function(req, res, next) {
 				projects:result
 			});
 		});
-	};
+	}
 });
 
 router.post('/files', upload.single('uploadFile'), function(req, res) {

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
 	port     : 3306,
@@ -55,7 +55,7 @@ router.get('/:project', function(req, res, next) {
 				});
 			}
 		});
-	};
+	}
 });
 
 router.get('/:project/contact', function(req, res, next) {
@@ -87,9 +87,9 @@ router.get('/:project/contact', function(req, res, next) {
 						users: users_result
 					});
 				});
-			};
+			}
 		});
-	};
+	}
 });
 
 router.get('/:project/contact/vcard', function(req, res, next) {
@@ -109,9 +109,9 @@ router.get('/:project/contact/vcard', function(req, res, next) {
 						users: users_result
 					});
 				});
-			};
+			}
 		});
-	};
+	}
 });
 
 router.get('/:project/calendar', function(req, res, next) {
@@ -147,13 +147,12 @@ router.get('/:project/calendar', function(req, res, next) {
 						'fullcalendar.css'
 					]
 				});
-			};
+			}
 		});
-	};
+	}
 });
 
 router.get('/:project/chat', function(req, res, next) {
-	//console.log(req);
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -193,9 +192,9 @@ router.get('/:project/chat', function(req, res, next) {
 						'chat.css'
 					]
 				});
-			};
+			}
 		});
-	};
+	}
 });
 
 router.get('/:project/hangout', csrfProtection, function(req, res, next) {
@@ -227,10 +226,10 @@ router.get('/:project/hangout', csrfProtection, function(req, res, next) {
 						csrfToken: req.csrfToken(),
 						title: result[0].name
 					});
-				};
-			};
+				}
+			}
 		});
-	};
+	}
 });
 
 router.post('/:project/hangout', parseForm, csrfProtection, function(req, res, next) {
@@ -249,11 +248,10 @@ router.post('/:project/hangout', parseForm, csrfProtection, function(req, res, n
 				});
 			}
 		});
-	};
+	}
 });
 
 router.get('/:project/join', function(req, res, next) {
-	"use strict";
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -284,18 +282,16 @@ router.get('/:project/join', function(req, res, next) {
 	}
 });
 
-/*
-메모 기능 추가 by. 미즈엘
-윈도우즈의 스티커 메모와 같이 메모를 추가할 수도 있다.
-*/
 router.get('/:project/memo', function(req, res, next) {
-	"use strict"; //엄격한 코딩 컨벤션 적용
 	if (!req.session.name) {
 		res.redirect('/user/login');
 		return;
 	}
-	connection.query('select * from projects where url = ?', [req.params.project], function(err, res2) {
-		if(res2.length) {
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.redirect('/p/' + req.params.project + '/join');
+		} else {
 			res.render('project_memo', {
 				user: {
 					name: req.session.name,
@@ -303,58 +299,45 @@ router.get('/:project/memo', function(req, res, next) {
 					pid: req.session.pid
 				},
 				project: {
-					id: res2[0].id,
-					url: res2[0].url,
-					name: res2[0].name,
-					desc: res2[0].desc,
-					admin_id: res2[0].admin_id,
-					hangout_url: res2[0].hangout_url
+					id: result[0].id,
+					url: result[0].url,
+					name: result[0].name,
+					desc: result[0].desc,
+					admin_id: result[0].admin_id,
+					hangout_url: result[0].hangout_url
 				},
-				title: res2[0].name,
-				js: [
-					'memo.js'
-				],
+				title: result[0].name,
 				css: [
 					'memo.css'
 				]
 			});
-			return;
-		}
-		else {
-			res.writeHead(200, {'content-type':'text/html'});
-			res.end('<h1>접근할 수 없는 포틀릿입니다.</h1>');
 		}
 	});
 
 });
 
 router.post('/:project/memo', function(req, res, next) {
-	"use strict";
 	if (!req.session.name) {
 		res.redirect('/user/login');
 		return;
 	}
-	connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, req.body.project], function(err, res2) {
-		if(res2.length) {
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if(result.length == 0) {
+			res.json({});
+		} else {
 			var data = {
 				project : req.body.project,
 				color : req.body.color,
 				is_finished : false,
 				writer : ""+req.session.pid,
 				content : req.body.content
-			};
+			}
 			connection.query('insert into memo_content set ?', data, function(err, result) {
-				if (err) {throw err;}
-				res.writeHead(200, {'content-type' : 'text/html'});
-				res.end(JSON.stringify(data));
+				if (err) throw err;
+				res.json(data);
 			});
-		} else {
-			res.writeHead(200, {'content-type':'text/html'});
-			res.end('접근할 수 없는 포틀릿입니다.');
 		}
 	});
-
-
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
 	port     : 3306,
@@ -24,7 +24,6 @@ var parseForm = bodyParser.urlencoded({extended: false});
 var https = require('https');
 var SECRET = '6Lc9rQkTAAAAAMvwOmRaqzh_gL_SCw0sI20hr_dG';
 function verifyReCaptcha(key, cb) {
-	"use strict";
 	var recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify?secret=';
 	https.get(recaptcha_url + SECRET + "&response=" + key, function (res) {
 		var data = "";
