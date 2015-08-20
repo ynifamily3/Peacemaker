@@ -25,9 +25,5 @@ build/Release
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
-<<<<<<< .merge_file_A5JnAo
 public/uploads
 .idea
-=======
-public/uploads
->>>>>>> .merge_file_BUxvlx
