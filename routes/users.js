@@ -5,7 +5,7 @@ var router = express.Router();
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
 	host     : 'localhost',
-	port	 : 3306,
+	port     : 3306,
 	user     : 'peacemaker',
 	password : 's9MxufFcuShxDaB3',
 	database : 'peacemaker'
@@ -231,7 +231,7 @@ router.get('/edit/pw', csrfProtection, function(req, res, next) {
 				]
 			});
 		});
-	}
+	};
 });
 
 router.post('/edit/pw', parseForm, csrfProtection, function(req, res, next) {

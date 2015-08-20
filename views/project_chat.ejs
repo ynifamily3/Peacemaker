@@ -53,11 +53,11 @@
 		}
 		if(data.type == "File") {
 			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
-			$('#chattingWindow .room').append("<div class='"+className+"'>"+"<a href='/files/"+data.path+"'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> "+data.fileName+"</a></div>");
+			$('#chattingWindow .room').append("<div class='" + className+"'>" + "<a href='/files/" + data.path + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.fileName + "</a></div>");
 		} else if(data.type == "notification") {
-			$('#chattingWindow .room').append("<div class='"+className+" .notification'>"+data.message+"</div>");
+			$('#chattingWindow .room').append("<div class='" + className + " .notification'>" + data.message + "</div>");
 		} else {
-			$('#chattingWindow .room').append("<div class='"+className+"'>"+data.message+"</div>");
+			$('#chattingWindow .room').append("<div class='" + className + "'>" + data.message + "</div>");
 		}
 
 

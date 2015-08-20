@@ -1462,7 +1462,7 @@
         this._days = +days +
             weeks * 7;
         // It is impossible translate months into days without knowing
-        // which months you are are talking about.ejs, so we have to store
+        // which months you are are talking about, so we have to store
         // it separately.
         this._months = +months +
             quarters * 3 +
@@ -1785,7 +1785,7 @@
     function createAdder(direction, name) {
         return function (val, period) {
             var dur, tmp;
-            //invert the arguments, but complain about.ejs it
+            //invert the arguments, but complain about it
             if (period !== null && !isNaN(+period)) {
                 deprecateSimple(name, 'moment().' + name  + '(period, number) is deprecated. Please use moment().' + name + '(number, period).');
                 tmp = val; val = period; period = tmp;

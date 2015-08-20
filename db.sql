@@ -49,27 +49,23 @@ CREATE TABLE IF NOT EXISTS `files` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE `peacemaker`.`chatting_content` (
-  `num` INT NOT NULL COMMENT '',
-  `project_id` INT NULL COMMENT '',
-  `type` VARCHAR(10) NULL COMMENT '',
-  `content` VARCHAR(256) NULL COMMENT '',
-  `time` VARCHAR(45) NULL COMMENT '',
-  `writer` VARCHAR(45) NULL COMMENT '',
-  PRIMARY KEY (`num`)  COMMENT '',
-  UNIQUE INDEX `num_UNIQUE` (`num` ASC)  COMMENT '')
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_general_ci;
+  `num` INT NOT NULL,
+  `project_id` INT NULL,
+  `type` VARCHAR(10) NULL,
+  `content` VARCHAR(256) NULL,
+  `time` VARCHAR(45) NULL,
+  `writer` VARCHAR(45) NULL,
+  PRIMARY KEY (`num`) ,
+  UNIQUE INDEX `num_UNIQUE` (`num` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE `peacemaker`.`memo_content` (
-  `memo_id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '',
-  `project` INT NOT NULL COMMENT '',
-  `color` VARCHAR(10) NULL COMMENT '',
-  `is_finished` INT NULL COMMENT '',
-  `writer` INT NULL COMMENT '',
-  `content` VARCHAR(300) NULL COMMENT '',
-  PRIMARY KEY (`memo_id`)  COMMENT '',
-  UNIQUE INDEX `memo_id_UNIQUE` (`memo_id` ASC)  COMMENT '')
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_general_ci;
+  `memo_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `project` INT NOT NULL,
+  `color` VARCHAR(10) NULL,
+  `is_finished` INT NULL,
+  `writer` INT NULL,
+  `content` VARCHAR(300) NULL,
+  PRIMARY KEY (`memo_id`) ,
+  UNIQUE INDEX `memo_id_UNIQUE` (`memo_id` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;
