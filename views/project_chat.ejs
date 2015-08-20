@@ -33,7 +33,7 @@
 	<script type="text/javascript">
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
-		var socket = io.connect('ws://<%= ws_addr %>:81');
+		var socket = io.connect('ws://<%= ws_addr %>:8080');
 
 		socket.emit('join_the_room', {room:'<%=room%>', auth:'<%=auth_token%>', name:'<%=user.name%>'});
 
