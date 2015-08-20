@@ -326,11 +326,11 @@ router.post('/:project/memo', function(req, res, next) {
 			res.json({});
 		} else {
 			var data = {
-				project : req.body.project,
-				color : req.body.color,
-				is_finished : false,
-				writer : ""+req.session.pid,
-				content : req.body.content
+				project: req.body.project,
+				color: req.body.color,
+				is_finished: false,
+				writer: req.session.pid,
+				content: req.body.content
 			}
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;
