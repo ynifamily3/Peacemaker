@@ -6,17 +6,43 @@
 <script>
 	$(document).ready(function() {
 		$('#calendar').fullCalendar({
+			customButtons: {
+				newEvent: {
+					text: '새 이벤트',
+					click: function() {
+						$('#newEvent').modal('show');
+					}
+				}
+			},
 			header: {
 				left: 'title',
 				center: '',
-				right: 'month,agendaDay today prev,next'
+				right: 'month,agendaDay today prev,next newEvent'
 			},
 			lang: 'ko',
 			dayClick: function(date, jsEvent, view) {
 			$('#calendar').fullCalendar('changeView', 'agendaDay');
 			$('#calendar').fullCalendar('gotoDate', date);
-		 }
+		 },
+		 events: []
 		});
 	});
 </script>
+<div class="modal fade" id="newEvent">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">새 이벤트</h4>
+			</div>
+			<div class="modal-body">
+				<p></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
+				<button type="button" class="btn btn-primary btn-sm">저장</button>
+			</div>
+		</div>
+	</div>
+</div>
 <% include layout_footer %>
