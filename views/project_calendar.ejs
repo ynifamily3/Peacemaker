@@ -1,16 +1,27 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
-<div class="col-md-10">
-	<div id='calendar'></div>
+<div id='calendar' class="col-md-10"></div>
+<div id='newEvent' class="hidden clearfix">
+	<div class="col-md-9 col-sm-10 col-xs-10">
+		<h2 class="zero">새 이벤트</h2>
+	</div>
+	<div class="col-md-1 col-sm-2 col-xs-2">
+		<button id="cancel" class="btn btn-danger btn-sm btn-block">취소</button>	
+	</div>
 </div>
 <script>
+	$('#cancel').click(function(){
+		$('#newEvent').addClass('hidden');
+		$('#calendar').removeClass('hidden');
+	});
 	$(document).ready(function() {
 		$('#calendar').fullCalendar({
 			customButtons: {
 				newEvent: {
 					text: '새 이벤트',
 					click: function() {
-						$('#newEvent').modal('show');
+						$('#newEvent').removeClass('hidden');
+						$('#calendar').addClass('hidden');
 					}
 				}
 			},
@@ -28,21 +39,4 @@
 		});
 	});
 </script>
-<div class="modal fade" id="newEvent">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">새 이벤트</h4>
-			</div>
-			<div class="modal-body">
-				<p></p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
-				<button type="button" class="btn btn-primary btn-sm">저장</button>
-			</div>
-		</div>
-	</div>
-</div>
 <% include layout_footer %>

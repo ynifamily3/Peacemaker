@@ -4,3 +4,8 @@ input.ng-touched.ng-invalid {
 nav#navbar {
 	margin-top: 15px;
 }
+
+.zero {
+	margin: 0;
+	padding: 0;
+}
