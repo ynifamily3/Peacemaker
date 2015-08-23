@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var htmlspecialchars = require('htmlspecialchars');
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -353,10 +354,22 @@ router.get('/:project/memo/get', function(req, res, next) {
 			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
 				req.query.page = 1;
 			}
-			connection.query('select content, name, color from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
-				res.writeHead(200, {"Content-Type:": "text/html"});
-				res.write("for(;;);"); //Ajax hijacking protection
-				res.end(JSON.stringify(memo_result));
+			connection.query('select content, writer, color from memo_content where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
+			if (err) throw err;
+				connection.query('select Count(memo_id) from memo_content where project = ?', [result[0].id], function(err, cresult) {
+				var json = cresult[0];
+				var cnt;
+				for (var key in json) {
+					cnt = json[key];
+					console.log(json[key]);
+				}
+				if (err) throw err;
+					res.writeHead(200, {"Content-Type:": "text/html"});
+					res.write("for(;;);"); //Ajax hijacking protection
+					memo_result.push({cl:cnt});
+					var send = JSON.stringify(memo_result);
+					res.end(send);
+				});
 			});
 		}
 	});

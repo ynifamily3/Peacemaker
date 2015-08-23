@@ -2,7 +2,7 @@
 <% include layout_project_sidebar %>
 
 <div class="col-md-10" ng-app>
-	<h1>Freebord</h1>
+	<h1>메모장</h1>
 	<label class="sr-only" for="inputMemo">메모 내용 추가</label>
 	<form id="memojang" method="post">
 		<input type="hidden" id="project" name="project" value="<%=project.id%>" />
@@ -38,6 +38,7 @@
 <script>
 	var selected = 'blue';
 	var currentPage = 1;
+	var totalPages = 1;
 	var number_of_memo = 1;
 	$('body').ready(function () {
 		g(currentPage);
@@ -71,11 +72,14 @@
             url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
             success:function(data){
 				var c;
+				currentPage = p;
 				data = data.substring(8);
 				data = JSON.parse(data);
-				number_of_memo = data.length;
+				number_of_memo = data[data.length - 1].cl;
+				totalPages = Math.ceil(number_of_memo/10);
+				//if(totalPages == 0) totalPages = 1;
 				$(".movePage > button").remove();
-				for(var i = 1; i <= Math.ceil(number_of_memo/10); i++) {
+				for(var i = 1; i <= totalPages; i++) {
 					if(i == currentPage)
 						c = '<button type="button" class="btn btn-warning" onclick="javascript:g('+i+')">' + i + '</button>';
 					else
@@ -83,11 +87,28 @@
 					$(".movePage").append(c);
 				}
 				$(".memo_list > tr").remove();
-                for(var i = 0; i < data.length; i++) {
+				
+				if(currentPage == totalPages) {
+					number_of_memo %= 10;
+					if(!number_of_memo) number_of_memo = 10;
+				} else {
+					number_of_memo = 10;
+				}
+				
+				
+				if(totalPages == 0) number_of_memo = 0;
+				
+                for(var i = 0; i < number_of_memo; i++) {
 					c = "<tr>";
-					c += "<td>"+ data[i].content +"</td>";
+					c += "<td class=\"col-md-10\">"+ data[i].content +"</td>";
 					c += "<td>"+data[i].name+"</td>";
 					c += "<td>"+data[i].color+"</td>";
+					c += "</tr>";
+					$(".memo_list").append(c);
+				}
+				for(var i = 0; i < 10 - number_of_memo; i++) {
+					c = "<tr>";
+					c += "<td colspan = \"3\">-</td>";
 					c += "</tr>";
 					$(".memo_list").append(c);
 				}
