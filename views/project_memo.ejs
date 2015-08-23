@@ -2,24 +2,59 @@
 <% include layout_project_sidebar %>
 
 <div class="col-md-10" ng-app>
-	<h1>메모장</h1>
+	<h1>Freebord</h1>
 	<label class="sr-only" for="inputMemo">메모 내용 추가</label>
 	<form id="memojang" method="post">
 		<input type="hidden" id="project" name="project" value="<%=project.id%>" />
 		<input type="text" id="inputMemo" class="form-control" aria-describedby="helpBlock" ng-model="memocontext" ng-maxlength="140" placeholder="메모할 내용을 입력해 주세요" maxlength="140" />
-		<p class="text-right">{{memocontext.length||0}}/140</p>
+		<p class="text-right mcl">{{memocontext.length||0}}/140</p>
 		<div class="color-pickers">
 			<div class="color-pick darkblue" onclick="s('darkblue')"></div>
 			<div class="color-pick green" onclick="s('green')"></div>
 			<div class="color-pick yellow" onclick="s('yellow')"></div>
 			<div class="color-pick red" onclick="s('red')"></div>
-			<div class="color-pick blue" onclick="s ('blue')"></div>
+			<div class="color-pick blue" onclick="s('blue')"></div>
 		</div>
 	</form>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>내용</th>
+				<th>작성자</th>
+				<th>시간</th>
+		</thead>
+		<tbody class="memo_list">
+			<tr>
+				<td colspan="3" class="loading text-center">불러오는 중...</td>
+			</tr>
+		</tbody>
+		<table class="movePage">
+			<tr>
+				<td class="col-md-2"><b>&lt;&nbsp;&nbsp;&nbsp;</b></td>
+				<td><b>1</b></td>
+				<td><b>2</b></td>
+				<td><b>3</b></td>
+				<td><b>4</b></td>
+				<td><b>5</b></td>
+				<td><b>6</b></td>
+				<td><b>7</b></td>
+				<td><b>8</b></td>
+				<td><b>9</b></td>
+				<td><b>10</b></td>
+				<td><b>&nbsp;&nbsp;&nbsp;&gt;</b></td>
+			</tr>
+		</table>
+	</table>
+	
 </div>
 <script>
 	var selected = 'blue';
-	$('body').ready(function () {$('#inputMemo').focus();
+	var currentPage = 1;
+	var number_of_memo = 1;
+	$('body').ready(function () {
+		g(currentPage);
+		$('#inputMemo').focus();
 		$('body').keydown(function () {$('#inputMemo').focus();});
 		$('.blue').css('border', '3px solid'); $('#memojang').submit(function (event) {
 			event.preventDefault();
@@ -30,7 +65,7 @@
 					content: $('#inputMemo').val()
 				}).done(function(data) {
 					$('#inputMemo').val('');
-					alert(JSON.stringify(data));
+					g(currentPage);
 				});
 			}
 		});
@@ -43,6 +78,28 @@
 		$('.blue').css('border', 'none');
 		$('.' +  v).css('border', '3px solid');
 		selected = v;
+	}
+	function g(p) {
+		 $.ajax({
+            url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
+            success:function(data){
+				data = data.substring(8);
+				data = JSON.parse(data);
+				number_of_memo = data.length;
+				$(".memo_list > tr").remove();
+                for(var i = 0; i < data.length; i++) {
+					var c = "<tr>";
+					c += "<td>"+ data[i].content +"</td>";
+					c += "<td>"+data[i].name+"</td>";
+					c += "<td>"+data[i].color+"</td>";
+					c += "</tr>";
+					$(".memo_list").append(c);
+				}
+            }
+        });
+	}
+	function rfpl() {
+		//refresh the page list
 	}
 </script>
 <% include layout_footer %>

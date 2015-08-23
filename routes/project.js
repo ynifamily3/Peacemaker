@@ -340,4 +340,27 @@ router.post('/:project/memo', function(req, res, next) {
 	});
 });
 
+router.get('/:project/memo/get', function(req, res, next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.redirect('/p/' + req.params.project + '/join');
+		} else {
+			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
+				req.query.page = 1;
+			}
+			connection.query('select content, name, color from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc', [result[0].id], function(err, memo_result) {
+				res.writeHead(200, {"Content-Type:": "text/html"});
+				res.write("for(;;);"); //Ajax hijacking protection
+				res.end(JSON.stringify(memo_result));
+			});
+		}
+	});
+
+});
+
 module.exports = router;
