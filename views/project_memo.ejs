@@ -7,7 +7,7 @@
 	<form id="memojang" method="post">
 		<input type="hidden" id="project" name="project" value="<%=project.id%>" />
 		<input type="text" id="inputMemo" class="form-control" aria-describedby="helpBlock" ng-model="memocontext" ng-maxlength="140" placeholder="메모할 내용을 입력해 주세요" maxlength="140" />
-		<p class="text-right mcl">{{memocontext.length||0}}/140</p>
+		<p class="text-right">{{memocontext.length||0}}/140</p>
 		<div class="color-pickers">
 			<div class="color-pick darkblue" onclick="s('darkblue')"></div>
 			<div class="color-pick green" onclick="s('green')"></div>
@@ -16,7 +16,6 @@
 			<div class="color-pick blue" onclick="s('blue')"></div>
 		</div>
 	</form>
-
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -29,23 +28,11 @@
 				<td colspan="3" class="loading text-center">불러오는 중...</td>
 			</tr>
 		</tbody>
-		<table class="movePage">
-			<tr>
-				<td class="col-md-2"><b>&lt;&nbsp;&nbsp;&nbsp;</b></td>
-				<td><b>1</b></td>
-				<td><b>2</b></td>
-				<td><b>3</b></td>
-				<td><b>4</b></td>
-				<td><b>5</b></td>
-				<td><b>6</b></td>
-				<td><b>7</b></td>
-				<td><b>8</b></td>
-				<td><b>9</b></td>
-				<td><b>10</b></td>
-				<td><b>&nbsp;&nbsp;&nbsp;&gt;</b></td>
-			</tr>
-		</table>
 	</table>
+	
+	<center> <!-- deprecated 된 코드이므로 이 외의 해결 방법을 아는 사람은 수정 바람.. -->
+		<div class="btn-group movePage"></div>
+	</center>
 	
 </div>
 <script>
@@ -83,12 +70,21 @@
 		 $.ajax({
             url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
             success:function(data){
+				var c;
 				data = data.substring(8);
 				data = JSON.parse(data);
 				number_of_memo = data.length;
+				$(".movePage > button").remove();
+				for(var i = 1; i <= Math.ceil(number_of_memo/10); i++) {
+					if(i == currentPage)
+						c = '<button type="button" class="btn btn-warning" onclick="javascript:g('+i+')">' + i + '</button>';
+					else
+						c = '<button type="button" class="btn btn-default" onclick="javascript:g('+i+')">' + i + '</button>';
+					$(".movePage").append(c);
+				}
 				$(".memo_list > tr").remove();
                 for(var i = 0; i < data.length; i++) {
-					var c = "<tr>";
+					c = "<tr>";
 					c += "<td>"+ data[i].content +"</td>";
 					c += "<td>"+data[i].name+"</td>";
 					c += "<td>"+data[i].color+"</td>";
@@ -97,9 +93,6 @@
 				}
             }
         });
-	}
-	function rfpl() {
-		//refresh the page list
 	}
 </script>
 <% include layout_footer %>
