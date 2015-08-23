@@ -13,7 +13,7 @@ var project = require('./routes/project');
 var projects = require('./routes/projects');
 var user = require('./routes/user');
 var users = require('./routes/users');
-//주인님 그거하자 그거 낑낑
+
 var app = express();
 
 var server = app.listen(8080);
