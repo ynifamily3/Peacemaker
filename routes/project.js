@@ -354,7 +354,7 @@ router.get('/:project/memo/get', function(req, res, next) {
 			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
 				req.query.page = 1;
 			}
-			connection.query('select content, writer, color from memo_content where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
+			connection.query('select content, name, color from memo_content join users where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
 			if (err) throw err;
 				connection.query('select Count(memo_id) from memo_content where project = ?', [result[0].id], function(err, cresult) {
 				var json = cresult[0];
