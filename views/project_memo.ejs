@@ -13,13 +13,34 @@
 			<div class="color-pick green" onclick="s('green')"></div>
 			<div class="color-pick yellow" onclick="s('yellow')"></div>
 			<div class="color-pick red" onclick="s('red')"></div>
-			<div class="color-pick blue" onclick="s ('blue')"></div>
+			<div class="color-pick blue" onclick="s('blue')"></div>
 		</div>
 	</form>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>List</th>
+		</thead>
+		<tbody class="memo_list">
+			<tr>
+				<td colspan="3" class="loading text-center">불러오는 중...</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<center> <!-- deprecated 된 코드이므로 이 외의 해결 방법을 아는 사람은 수정 바람.. -->
+		<div class="btn-group movePage"></div>
+	</center>
+	
 </div>
 <script>
 	var selected = 'blue';
-	$('body').ready(function () {$('#inputMemo').focus();
+	var currentPage = 1;
+	var totalPages = 1;
+	var number_of_memo = 1;
+	$('body').ready(function () {
+		g(currentPage);
+		$('#inputMemo').focus();
 		$('body').keydown(function () {$('#inputMemo').focus();});
 		$('.blue').css('border', '3px solid'); $('#memojang').submit(function (event) {
 			event.preventDefault();
@@ -30,7 +51,7 @@
 					content: $('#inputMemo').val()
 				}).done(function(data) {
 					$('#inputMemo').val('');
-					alert(JSON.stringify(data));
+					g(currentPage);
 				});
 			}
 		});
@@ -43,6 +64,68 @@
 		$('.blue').css('border', 'none');
 		$('.' +  v).css('border', '3px solid');
 		selected = v;
+	}
+	function g(p) {
+		 $.ajax({
+            url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
+            success:function(data){
+				var c;
+				currentPage = p;
+				data = data.substring(8);
+				data = JSON.parse(data);
+				number_of_memo = data[data.length - 1].cl;
+				totalPages = Math.ceil(number_of_memo/10);
+				//if(totalPages == 0) totalPages = 1;
+				$(".movePage > button").remove();
+				for(var i = 1; i <= totalPages; i++) {
+					if(i == currentPage)
+						c = '<button type="button" class="btn btn-warning" onclick="javascript:g('+i+')">' + i + '</button>';
+					else
+						c = '<button type="button" class="btn btn-default" onclick="javascript:g('+i+')">' + i + '</button>';
+					$(".movePage").append(c);
+				}
+				$(".memo_list > tr").remove();
+				
+				if(currentPage == totalPages) {
+					number_of_memo %= 10;
+					if(!number_of_memo) number_of_memo = 10;
+				} else {
+					number_of_memo = 10;
+				}
+				
+				
+				if(totalPages == 0) number_of_memo = 0;
+				
+                for(var i = 0; i < number_of_memo; i++) {
+					switch(data[i].color) {
+						case "darkblue" :
+							c = '<tr class="info">';
+						break;
+						case "green":
+							c = '<tr class="success">';
+						break;
+						case "yellow":
+							c = '<tr class="warning">';
+						break;
+						case "red":
+							c = '<tr class="danger">';
+						break;
+						case "blue":
+							c = '<tr class="active">';
+						break;
+					}
+					c += "<td class=\"col-md-10\"><b>"+ data[i].name + '</b> ' + data[i].content +"</td>";
+					c += "</tr>";
+					$(".memo_list").append(c);
+				}
+				for(var i = 0; i < 10 - number_of_memo; i++) {
+					c = "<tr>";
+					c += "<td colspan = \"3\">-</td>";
+					c += "</tr>";
+					$(".memo_list").append(c);
+				}
+            }
+        });
 	}
 </script>
 <% include layout_footer %>
