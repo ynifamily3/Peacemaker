@@ -438,7 +438,7 @@ router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res
 	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 		if (err) throw err;
 		if(result.length == 0) {
-			res.redirect('/p/' + req.params.project + '/join');
+			res.json({});
 		} else {
 			if(req.params.page % 1 !== 0 || req.params.page < 1 || !validator.isNumeric(req.params.page)) {
 				req.params.page = 1;
@@ -455,13 +455,24 @@ router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res
 });
 
 router.post('/:project/memo/check/:id', parseForm, csrfProtection, function (req, res, next) {
-	connection.query('select is_finished from memo_content where memo_id = ?', [req.params.id], function (err, result) {
-		var is_finished = result[0].is_finished ? 0 : 1;
-		connection.query('update memo_content set is_finished = ? where memo_id = ?', [is_finished, req.params.id], function (err, result) {
-			res.json({
-				'is_finished': is_finished
+	if (!req.session.name) {
+		res.json({'status': 'fail', 'err': 'permission_denied'});
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.json({});
+		} else {
+			connection.query('select is_finished from memo_content where memo_id = ?', [req.params.id], function (err, result) {
+				var is_finished = result[0].is_finished ? 0 : 1;
+				connection.query('update memo_content set is_finished = ? where memo_id = ?', [is_finished, req.params.id], function (err, result) {
+					res.json({
+						'is_finished': is_finished
+					});
+				});	
 			});
-		});	
+		}
 	});
 });
 
