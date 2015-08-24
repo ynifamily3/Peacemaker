@@ -5,7 +5,6 @@
 	<h1>메모장</h1>
 	<label class="sr-only" for="inputMemo">메모 내용 추가</label>
 	<form id="memojang" method="post">
-		<input type="hidden" id="project" name="project" value="<%=project.id%>" />
 		<input type="text" id="inputMemo" class="form-control" aria-describedby="helpBlock" ng-model="memocontext" ng-maxlength="140" placeholder="메모할 내용을 입력해 주세요" maxlength="140" />
 		<p class="text-right">{{memocontext.length||0}}/140</p>
 		<div class="color-pickers">
@@ -22,40 +21,45 @@
 				<th>List</th>
 		</thead>
 		<tbody class="memo_list">
-			<tr>
-				<td colspan="3" class="loading text-center">불러오는 중...</td>
+			<tr class="loading">
+				<td colspan="3" class="text-center">불러오는 중...</td>
+			</tr>
+			<tr class="final hidden">
+				<td colspan="3" class="text-center">메모의 끝</td>
 			</tr>
 		</tbody>
 	</table>
-	
-	<center> <!-- deprecated 된 코드이므로 이 외의 해결 방법을 아는 사람은 수정 바람.. -->
-		<div class="btn-group movePage"></div>
-	</center>
-	
 </div>
 <script>
 	var selected = 'blue';
-	var currentPage = 1;
-	var totalPages = 1;
-	var number_of_memo = 1;
+	var currentPage = 0;
+	var isEnd = false;
 	$('body').ready(function () {
-		g(currentPage);
+		get();
 		$('#inputMemo').focus();
-		$('body').keydown(function () {$('#inputMemo').focus();});
-		$('.blue').css('border', '3px solid'); $('#memojang').submit(function (event) {
-			event.preventDefault();
-			if($('#inputMemo').val() !== "") {
-				$.post("./memo", {
-					project:$('#project').val(),
-					color: selected,
-					content: $('#inputMemo').val()
-				}).done(function(data) {
-					$('#inputMemo').val('');
-					g(currentPage);
-				});
-			}
-		});
+		$('.blue').css('border', '3px solid');
 	});
+
+	$('body').keydown(function () {$('#inputMemo').focus();});
+
+	$('#memojang').submit(function () {
+		if($('#inputMemo').val() !== "") {
+			$.ajax({
+				type: 'POST',
+				url:'/p/<%= project.url %>/memo',
+				data: {
+					color: selected,
+					content: $('#inputMemo').val(),
+					_csrf: '<%=csrfToken%>'
+				}, success: function(data) {
+					$('tr:eq(1)').before(render(selected, '<%= user.name %>', $('#inputMemo').val()));
+					$('#inputMemo').val('');
+				}
+			});
+		}
+		return false;
+	});
+
 	function s(v) {
 		$('.darkblue').css('border', 'none');
 		$('.green').css('border', 'none');
@@ -64,67 +68,51 @@
 		$('.blue').css('border', 'none');
 		$('.' +  v).css('border', '3px solid');
 		selected = v;
+	};
+
+	function render(color, name, content) {
+		var c;
+		var colorObject = {
+			'darkblue': 'info',
+			'green': 'success',
+			'yellow': 'warning',
+			'red': 'danger',
+			'blue': 'active'
+		}
+		return '<tr class="' + colorObject[color] + '"><td class="col-md-10"><b>'+ name + '</b> ' + content + '</td></tr>';
 	}
-	function g(p) {
+
+	function get() {
+		$('tr.loading').removeClass('hidden');
 		$.ajax({
-			url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
-			success:function(data){
-				var c;
-				currentPage = p;
-				data = data.substring(8);
-				data = JSON.parse(data);
-				number_of_memo = data[data.length - 1].cl;
-				totalPages = Math.ceil(number_of_memo/10);
-				//if(totalPages == 0) totalPages = 1;
-				$(".movePage > button").remove();
-				for(var i = 1; i <= totalPages; i++) {
-					if(i == currentPage)
-						c = '<button type="button" class="btn btn-warning" onclick="javascript:g('+i+')">' + i + '</button>';
-					else
-						c = '<button type="button" class="btn btn-default" onclick="javascript:g('+i+')">' + i + '</button>';
-					$(".movePage").append(c);
-				}
-				$(".memo_list > tr").remove();
-				
-				if(currentPage == totalPages) {
-					number_of_memo %= 10;
-					if(!number_of_memo) number_of_memo = 10;
-				} else {
-					number_of_memo = 10;
-				}
-				
-				if(totalPages == 0) number_of_memo = 0;
-				
-				for(var i = 0; i < number_of_memo; i++) {
-					switch(data[i].color) {
-						case "darkblue" :
-						c = '<tr class="info">';
-						break;
-						case "green":
-						c = '<tr class="success">';
-						break;
-						case "yellow":
-						c = '<tr class="warning">';
-						break;
-						case "red":
-						c = '<tr class="danger">';
-						break;
-						case "blue":
-						c = '<tr class="active">';
-						break;
+			type: 'POST',
+			url:'/p/<%= project.url %>/memo/' + (++currentPage),
+			data: {
+				_csrf: '<%=csrfToken%>'
+			},
+			success: function(data) {
+				if (data.status == 'success') {
+					$('tr.loading').addClass('hidden');
+					if (data.memo.length < 10) {
+						isEnd = true;
+						$('tr.final').removeClass('hidden');
 					}
-					c += "<td class=\"col-md-10\"><b>"+ data[i].name + '</b> ' + data[i].content +"</td>";
-					c += "</tr>";
-					$(".memo_list").append(c);
-				}
-				for(var i = 0; i < 10 - number_of_memo; i++) {
-					c = "<tr>";
-					c += "<td colspan = \"3\">-</td>";
-					c += "</tr>";
-					$(".memo_list").append(c);
+					for (var i = 0; i < data.memo.length; i++) {
+						$('tr').last().before(render(data.memo[i].color, data.memo[i].name, data.memo[i].content));
+					};
+				};
+			}
+		});
+	};
+	
+	$(window).load(function() {
+		$(window).scroll(function() {
+			if ($(window).scrollTop() >= $(document).height() - $(window).height()) {
+				if (!isEnd && $('tr.loading').hasClass('hidden')) {
+					get();
 				}
 			}
 		});
-}
+	});
 </script>
 <% include layout_footer %>

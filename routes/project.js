@@ -283,7 +283,7 @@ router.get('/:project/join', function(req, res, next) {
 	}
 });
 
-router.get('/:project/memo', function(req, res, next) {
+router.get('/:project/memo', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 		return;
@@ -307,6 +307,7 @@ router.get('/:project/memo', function(req, res, next) {
 					admin_id: result[0].admin_id,
 					hangout_url: result[0].hangout_url
 				},
+				csrfToken: req.csrfToken(),
 				title: result[0].name,
 				css: [
 					'memo.css'
@@ -326,8 +327,9 @@ router.post('/:project/memo', function(req, res, next) {
 		if(result.length == 0) {
 			res.json({});
 		} else {
+			console.log(result);
 			var data = {
-				project: req.body.project,
+				project: result[0].id,
 				color: req.body.color,
 				is_finished: false,
 				writer: req.session.pid,
@@ -373,7 +375,30 @@ router.get('/:project/memo/get', function(req, res, next) {
 			});
 		}
 	});
+});
 
+router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({'status': 'fail', 'err': 'permission_denied'});
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.redirect('/p/' + req.params.project + '/join');
+		} else {
+			if(req.params.page % 1 !== 0 || req.params.page < 1 || !validator.isNumeric(req.params.page)) {
+				req.params.page = 1;
+			}
+			connection.query('select content, name, color from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.params.page - 1) * 10], function(err, result) {
+			if (err) throw err;
+				res.json({
+					'status': 'success',
+					'memo': result
+				});
+			});
+		}
+	});
 });
 
 module.exports = router;
