@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var htmlspecialchars = require('htmlspecialchars');
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -28,30 +29,35 @@ function phone_format(num) {
 	return num.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 }
 
-router.get('/:project', function(req, res, next) {
+router.get('/:project', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
-			if (err) {throw err;}
+			if (err) throw err;
 			if (result.length === 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				res.render('project_index', {
-					user: {
-						name: req.session.name,
-						username: req.session.username,
-						pid: req.session.pid
-					},
-					project: {
-						id: result[0].id,
-						url: result[0].url,
-						name: result[0].name,
-						desc: result[0].desc,
-						admin_id: result[0].admin_id,
-						hangout_url: result[0].hangout_url
-					},
-					title: result[0].name
+				connection.query('select *, projects.name as `title`, notifications.id as `notification_id` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ? and project_id = ?', [req.session.pid, result[0].id], function(err, notification_result) {
+					if (err) throw err;
+					res.render('project_index', {
+						user: {
+							name: req.session.name,
+							username: req.session.username,
+							pid: req.session.pid
+						},
+						project: {
+							id: result[0].id,
+							url: result[0].url,
+							name: result[0].name,
+							desc: result[0].desc,
+							admin_id: result[0].admin_id,
+							hangout_url: result[0].hangout_url
+						},
+						csrfToken: req.csrfToken(),
+						notifications: notification_result,
+						title: result[0].name
+					});
 				});
 			}
 		});
@@ -251,38 +257,118 @@ router.post('/:project/hangout', parseForm, csrfProtection, function(req, res, n
 	}
 });
 
-router.get('/:project/join', function(req, res, next) {
+router.get('/:project/join', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
-		connection.query('select * from projects where url = ?', [req.params.project], function(err, result) {
-			if (err) {throw err;}
-			if(result.length === 0) {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
 				res.redirect('/dashboard');
-				return;
+			} else {
+				connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					if (result.length == 0) {
+						connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+							if (err) throw err;
+							res.render('project_join', {
+								user: {
+									name: req.session.name,
+									username: req.session.username,
+									pid: req.session.pid
+								},
+								project: {
+									id: project_result[0].id,
+									url: project_result[0].url,
+									name: project_result[0].name,
+									desc: project_result[0].desc,
+									admin_id: project_result[0].admin_id,
+									created_date: moment(project_result[0].created_date).format('LL'),
+									hangout_url: project_result[0].hangout_url
+								},
+								requested: result.length,
+								csrfToken: req.csrfToken(),
+								title: project_result[0].name
+							});
+						});
+					} else {
+						res.redirect('/p/' + req.params.project);
+					}
+				});
 			}
-			res.render('project_join', {
-				user: {
-					name: req.session.name,
-					username: req.session.username,
-					pid: req.session.pid
-				},
-				project: {
-					id: result[0].id,
-					url: result[0].url,
-					name: result[0].name,
-					desc: result[0].desc,
-					admin_id: result[0].admin_id,
-					created_date: moment(result[0].created_date).format('LL'),
-					hangout_url: result[0].hangout_url
-				},
-				title: result[0].name
-			});
 		});
 	}
 });
 
-router.get('/:project/memo', function(req, res, next) {
+router.post('/:project/join', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({
+			'status': 'fail',
+			'err': 'permission_denied'
+		});
+	} else {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
+				res.json({
+					'status': 'fail',
+					'err': 'permission_denied'
+				});
+			} else {
+				connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					if (result.length == 0) {
+						var request = {
+							subject_id: req.session.pid,
+							object_id: project_result[0].admin_id,
+							project_id: project_result[0].id,
+							type: 101
+						};
+						connection.query('insert into notifications set ?', request, function(err, result) {
+							if (err) throw err;
+							res.json({
+								'status': 'success'
+							});
+						});
+					} else {
+						res.json({
+							'status': 'fail',
+							'err': 'duplicate_request'
+						});
+					}
+				});
+			}
+		});
+	}
+});
+
+router.post('/:project/join/cancel', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({
+			'status': 'fail',
+			'err': 'permission_denied'
+		});
+	} else {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
+				res.json({
+					'status': 'fail',
+					'err': 'permission_denied'
+				});
+			} else {
+				connection.query('delete from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					res.json({
+						'status': 'success'
+					});
+				});
+			}
+		});
+	}
+});
+
+router.get('/:project/memo', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 		return;
@@ -306,6 +392,7 @@ router.get('/:project/memo', function(req, res, next) {
 					admin_id: result[0].admin_id,
 					hangout_url: result[0].hangout_url
 				},
+				csrfToken: req.csrfToken(),
 				title: result[0].name,
 				css: [
 					'memo.css'
@@ -313,7 +400,6 @@ router.get('/:project/memo', function(req, res, next) {
 			});
 		}
 	});
-
 });
 
 router.post('/:project/memo', function(req, res, next) {
@@ -326,7 +412,7 @@ router.post('/:project/memo', function(req, res, next) {
 			res.json({});
 		} else {
 			var data = {
-				project: req.body.project,
+				project: result[0].id,
 				color: req.body.color,
 				is_finished: false,
 				writer: req.session.pid,
@@ -334,7 +420,57 @@ router.post('/:project/memo', function(req, res, next) {
 			}
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;
-				res.json(data);
+				res.json({
+					'status': 'success',
+					'id': result.insertId
+				});
+			});
+		}
+	});
+});
+
+
+router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({'status': 'fail', 'err': 'permission_denied'});
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.json({});
+		} else {
+			if(req.params.page % 1 !== 0 || req.params.page < 1 || !validator.isNumeric(req.params.page)) {
+				req.params.page = 1;
+			}
+			connection.query('select * from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.params.page - 1) * 10], function(err, result) {
+			if (err) throw err;
+				res.json({
+					'status': 'success',
+					'memo': result
+				});
+			});
+		}
+	});
+});
+
+router.post('/:project/memo/check/:id', parseForm, csrfProtection, function (req, res, next) {
+	if (!req.session.name) {
+		res.json({'status': 'fail', 'err': 'permission_denied'});
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if (err) throw err;
+		if(result.length == 0) {
+			res.json({});
+		} else {
+			connection.query('select is_finished from memo_content where memo_id = ?', [req.params.id], function (err, result) {
+				var is_finished = result[0].is_finished ? 0 : 1;
+				connection.query('update memo_content set is_finished = ? where memo_id = ?', [is_finished, req.params.id], function (err, result) {
+					res.json({
+						'is_finished': is_finished
+					});
+				});	
 			});
 		}
 	});

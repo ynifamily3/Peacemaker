@@ -13,6 +13,7 @@ var project = require('./routes/project');
 var projects = require('./routes/projects');
 var user = require('./routes/user');
 var users = require('./routes/users');
+var notification = require('./routes/notification');
 
 var app = express();
 
@@ -78,6 +79,7 @@ app.use('/user', users);
 app.use('/u', user);
 app.use('/project', projects);
 app.use('/p', project);
+app.use('/n', notification);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
