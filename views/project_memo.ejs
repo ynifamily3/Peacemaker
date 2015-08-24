@@ -24,6 +24,9 @@
 			<tr class="loading">
 				<td colspan="3" class="text-center">불러오는 중...</td>
 			</tr>
+			<tr class="load_new">
+				<td colspan="3" class="text-center"><a class="load" href='#'>더 불러오기</a></td>
+			</tr>
 			<tr class="final hidden">
 				<td colspan="3" class="text-center">메모의 끝</td>
 			</tr>
@@ -34,15 +37,15 @@
 	var selected = 'blue';
 	var currentPage = 0;
 	var isEnd = false;
-	$('body').ready(function () {
+	$('body').ready(function() {
 		get();
 		$('#inputMemo').focus();
 		$('.blue').css('border', '3px solid');
 	});
 
-	$('body').keydown(function () {$('#inputMemo').focus();});
+	$('body').keydown(function() {$('#inputMemo').focus();});
 
-	$('#memojang').submit(function () {
+	$('#memojang').submit(function() {
 		if($('#inputMemo').val() !== "") {
 			$.ajax({
 				type: 'POST',
@@ -57,6 +60,11 @@
 				}
 			});
 		}
+		return false;
+	});
+
+	$('tr.load_new a.load').click(function() {
+		get();
 		return false;
 	});
 
@@ -96,9 +104,10 @@
 					if (data.memo.length < 10) {
 						isEnd = true;
 						$('tr.final').removeClass('hidden');
+						$('tr.load_new').addClass('hidden');
 					}
 					for (var i = 0; i < data.memo.length; i++) {
-						$('tr').last().before(render(data.memo[i].color, data.memo[i].name, data.memo[i].content));
+						$('tr.load_new').before(render(data.memo[i].color, data.memo[i].name, data.memo[i].content));
 					};
 				};
 			}
