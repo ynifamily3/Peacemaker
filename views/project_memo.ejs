@@ -71,11 +71,9 @@
             success:function(data){
 				var c;
 				currentPage = p;
-				data = data.substring(8);
 				data = JSON.parse(data);
 				number_of_memo = data[data.length - 1].cl;
 				totalPages = Math.ceil(number_of_memo/10);
-				//if(totalPages == 0) totalPages = 1;
 				$(".movePage > button").remove();
 				for(var i = 1; i <= totalPages; i++) {
 					if(i == currentPage)
@@ -99,22 +97,23 @@
                 for(var i = 0; i < number_of_memo; i++) {
 					switch(data[i].color) {
 						case "darkblue" :
-							c = '<tr class="info">';
+							c = '<tr class="info" onclick="javascript:sf('+ data[i].memo_id +');">';
 						break;
 						case "green":
-							c = '<tr class="success">';
+							c = '<tr class="success" onclick="javascript:sf('+ data[i].memo_id +');">';
 						break;
 						case "yellow":
-							c = '<tr class="warning">';
+							c = '<tr class="warning" onclick="javascript:sf('+ data[i].memo_id +');">';
 						break;
 						case "red":
-							c = '<tr class="danger">';
+							c = '<tr class="danger" onclick="javascript:sf('+ data[i].memo_id +');">';
 						break;
 						case "blue":
-							c = '<tr class="active">';
+							c = '<tr class="active" onclick="javascript:sf('+ data[i].memo_id +');">';
 						break;
 					}
-					c += "<td class=\"col-md-10\"><b>"+ data[i].name + '</b> ' + data[i].content +"</td>";
+					var chk = data[i].is_finished ? "checked" : "";
+					c += "<td class=\"col-md-10\"><input type=\"checkbox\" class=\"memo_"+data[i].memo_id+"\" onclick=\"return false;\" "+ chk +"/> <b>"+ data[i].name + '</b> '+ data[i].content +"</td>";
 					c += "</tr>";
 					$(".memo_list").append(c);
 				}
@@ -126,6 +125,19 @@
 				}
             }
         });
+	}
+	
+	function sf(mid) {
+		$.ajax({
+            url:'./memo/chk?nc='+Math.round(Math.random()*1000000)+'&memo_id='+mid,
+            success:function(data){
+				if(data == '0')
+					data = false;
+				else
+					data = true;
+				$('.memo_'+mid).attr("checked", data);
+			}
+		});
 	}
 </script>
 <% include layout_footer %>

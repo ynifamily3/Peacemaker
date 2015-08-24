@@ -355,7 +355,7 @@ router.get('/:project/memo/get', function(req, res, next) {
 			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
 				req.query.page = 1;
 			}
-			connection.query('select content, name, color from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
+			connection.query('select content, name, color, is_finished, memo_id from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
 			if (err) throw err;
 				connection.query('select Count(memo_id) from memo_content where project = ?', [result[0].id], function(err, cresult) {
 				var json = cresult[0];
@@ -366,7 +366,6 @@ router.get('/:project/memo/get', function(req, res, next) {
 				}
 				if (err) throw err;
 					res.writeHead(200, {"Content-Type:": "text/html"});
-					res.write("for(;;);"); //Ajax hijacking protection
 					memo_result.push({cl:cnt});
 					var send = JSON.stringify(memo_result);
 					res.end(send);
@@ -376,5 +375,20 @@ router.get('/:project/memo/get', function(req, res, next) {
 	});
 
 });
-//노트북 이동22
+
+router.get('/:project/memo/chk', function (req, res, next) {
+	//1. 해당 memo_id 에서 추적
+	//2. checked 상태를 반전
+	//3. 결과를 리턴함. (0 or 1)
+	connection.query('select is_finished from memo_content where memo_id=?', [req.query.memo_id], function (err, result) {
+		console.log("이잉 : " + +!result[0].is_finished);
+		connection.query('update memo_content set is_finished=? where memo_id=?', [""+ +!result[0].is_finished, req.query.memo_id], function (err, res2) {
+			res.writeHead(200, {"Content-Type:": "text/html"});
+			res.end(""+ +!result[0].is_finished);
+		});
+			
+	});
+
+});
+
 module.exports = router;
