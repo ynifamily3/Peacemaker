@@ -164,7 +164,7 @@ router.get('/:project/chat', function(req, res, next) {
 			} else {
 				var ws_url = 'node.niceb5y.net';
 				if (process.env.NODE_ENV != 'production') {
-					ws_url = 'localhost';
+					ws_url = '192.168.0.10';
 				}
 				res.render('project_chat', {
 					auth_token: req.sessionID,
@@ -333,6 +333,7 @@ router.post('/:project/memo', function(req, res, next) {
 				writer: req.session.pid,
 				content: req.body.content
 			}
+			console.log("삽입 명령.." + JSON.stringify(data));
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;
 				res.json(data);
@@ -354,7 +355,7 @@ router.get('/:project/memo/get', function(req, res, next) {
 			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
 				req.query.page = 1;
 			}
-			connection.query('select content, name, color from memo_content join users where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
+			connection.query('select content, name, color from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
 			if (err) throw err;
 				connection.query('select Count(memo_id) from memo_content where project = ?', [result[0].id], function(err, cresult) {
 				var json = cresult[0];
