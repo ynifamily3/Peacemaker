@@ -66,9 +66,9 @@
 		selected = v;
 	}
 	function g(p) {
-		 $.ajax({
-            url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
-            success:function(data){
+		$.ajax({
+			url:'./memo/get?nc='+Math.round(Math.random()*1000000)+'&page='+p,
+			success:function(data){
 				var c;
 				currentPage = p;
 				data = data.substring(8);
@@ -93,25 +93,24 @@
 					number_of_memo = 10;
 				}
 				
-				
 				if(totalPages == 0) number_of_memo = 0;
 				
-                for(var i = 0; i < number_of_memo; i++) {
+				for(var i = 0; i < number_of_memo; i++) {
 					switch(data[i].color) {
 						case "darkblue" :
-							c = '<tr class="info">';
+						c = '<tr class="info">';
 						break;
 						case "green":
-							c = '<tr class="success">';
+						c = '<tr class="success">';
 						break;
 						case "yellow":
-							c = '<tr class="warning">';
+						c = '<tr class="warning">';
 						break;
 						case "red":
-							c = '<tr class="danger">';
+						c = '<tr class="danger">';
 						break;
 						case "blue":
-							c = '<tr class="active">';
+						c = '<tr class="active">';
 						break;
 					}
 					c += "<td class=\"col-md-10\"><b>"+ data[i].name + '</b> ' + data[i].content +"</td>";
@@ -124,8 +123,8 @@
 					c += "</tr>";
 					$(".memo_list").append(c);
 				}
-            }
-        });
-	}
+			}
+		});
+}
 </script>
 <% include layout_footer %>
