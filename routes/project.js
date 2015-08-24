@@ -252,33 +252,113 @@ router.post('/:project/hangout', parseForm, csrfProtection, function(req, res, n
 	}
 });
 
-router.get('/:project/join', function(req, res, next) {
+router.get('/:project/join', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
-		connection.query('select * from projects where url = ?', [req.params.project], function(err, result) {
-			if (err) {throw err;}
-			if(result.length === 0) {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
 				res.redirect('/dashboard');
-				return;
+			} else {
+				connection.query('select * from project_entries where pid = ? and id = ?', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					if (result.length == 0) {
+						connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+							if (err) throw err;
+							res.render('project_join', {
+								user: {
+									name: req.session.name,
+									username: req.session.username,
+									pid: req.session.pid
+								},
+								project: {
+									id: project_result[0].id,
+									url: project_result[0].url,
+									name: project_result[0].name,
+									desc: project_result[0].desc,
+									admin_id: project_result[0].admin_id,
+									created_date: moment(project_result[0].created_date).format('LL'),
+									hangout_url: project_result[0].hangout_url
+								},
+								requested: result.length,
+								csrfToken: req.csrfToken(),
+								title: project_result[0].name
+							});
+						});
+					} else {
+						res.redirect('/p/' + req.params.project);
+					}
+				});
 			}
-			res.render('project_join', {
-				user: {
-					name: req.session.name,
-					username: req.session.username,
-					pid: req.session.pid
-				},
-				project: {
-					id: result[0].id,
-					url: result[0].url,
-					name: result[0].name,
-					desc: result[0].desc,
-					admin_id: result[0].admin_id,
-					created_date: moment(result[0].created_date).format('LL'),
-					hangout_url: result[0].hangout_url
-				},
-				title: result[0].name
-			});
+		});
+	}
+});
+
+router.post('/:project/join', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({
+			'status': 'fail',
+			'err': 'permission_denied'
+		});
+	} else {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
+				res.json({
+					'status': 'fail',
+					'err': 'permission_denied'
+				});
+			} else {
+				connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					if (result.length == 0) {
+						var request = {
+							subject_id: req.session.pid,
+							object_id: project_result[0].admin_id,
+							project_id: project_result[0].id,
+							type: 101
+						};
+						connection.query('insert into notifications set ?', request, function(err, result) {
+							if (err) throw err;
+							res.json({
+								'status': 'success'
+							});
+						});
+					} else {
+						res.json({
+							'status': 'fail',
+							'err': 'duplicate request'
+						});
+					}
+				});
+			}
+		});
+	}
+});
+
+router.post('/:project/join/cancel', parseForm, csrfProtection, function(req, res, next) {
+	if (!req.session.name) {
+		res.json({
+			'status': 'fail',
+			'err': 'permission_denied'
+		});
+	} else {
+		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
+			if (err) throw err;
+			if(project_result.length == 0) {
+				res.json({
+					'status': 'fail',
+					'err': 'permission_denied'
+				});
+			} else {
+				connection.query('delete from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+					if (err) throw err;
+					res.json({
+						'status': 'success'
+					});
+				});
+			}
 		});
 	}
 });
