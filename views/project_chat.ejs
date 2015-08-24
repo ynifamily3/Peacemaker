@@ -6,6 +6,66 @@
 	var scr_num = 0; //스크롤할 곳 추적용
 	var temp_ballon = -1; //파일첨부 로딩창 추적용
 	var thumbnail; //썸네일 이미지 저장소
+	var myname = '<%=user.name%>';
+	var myid = '<%=user.pid%>';
+	function sendMessage(mtype, data) {
+		$.ajax({
+			type:'post',
+			url:'./chat',
+			data : {
+				mode : 'send',
+				type : mtype,
+				myname:myname,
+				myid:myid,
+				content : data.text,
+				original: data.original,
+				size: data.size
+			}, success : function(data2) {
+				socket.emit('client_emit', {signiture : data2.signiture, room : room});
+			}
+		});
+	}
+	
+	function receiveMessage(sig) {
+		$.ajax({
+			type:'post',
+			url:'./chat',
+			data : {
+				mode : 'receive',
+				myname:myname,
+				myid:myid,
+				signiture : sig
+			}, success : function(data) {
+				++scr_num;
+				var isme = false;
+				var className = "ballon scr_offset" + scr_num;
+				if(data.writer_name == myname) {
+					className = "ballon me scr_offset" + scr_num;
+					isme = true;
+				}
+				var noticlassName = "scr_offset" + scr_num;
+				if(data.type == "File") {
+					if(isme)
+						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br>"+data.date+"</div>");
+					else
+						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br>"+data.date+"</div>");
+				} else if(data.type == "notification") {
+					$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data.content + "</div>");
+				} else {
+					if(isme)
+						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content + "<br>"+data.date+"</div>");
+					else
+						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content + "<br>"+data.date+"</div>");
+				}
+				//적절한 위치로 스크롤
+				$('.scr_offset'+scr_num).ScrollTo({
+					duration: 500,
+					easing: 'linear'
+				});
+			}
+		});
+	}
+	
 </script>
 <div class="col-md-10">
 	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
@@ -33,38 +93,11 @@
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
 		var socket = io.connect('ws://<%= ws_addr %>:8080');
-
-		socket.emit('join_the_room', {room:'<%=room%>', auth:'<%=auth_token%>', name:'<%=user.name%>'});
-
-		socket.on('receive_msg', function(data) {
-			//서버 측에서 PUSH 가 들어오면.
-			++scr_num;
-			var className = "ballon me " + scr_num;
-
-		if(data.rel == 'me') {
-			className = "ballon me scr_offset" + scr_num;
-		}
-		else if(data.rel == 'another') {
-			className = "ballon scr_offset" + scr_num;
-		}
-		else {
-			className = "system scr_offset" + scr_num;
-		}
-		if(data.type == "File") {
-			//socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:name, type:'File'});
-			$('#chattingWindow .room').append("<div class='" + className+"'>" + "<a href='/files/" + data.path + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.fileName + "</a></div>");
-		} else if(data.type == "notification") {
-			$('#chattingWindow .room').append("<div class='" + className + " .notification'>" + data.message + "</div>");
-		} else {
-			$('#chattingWindow .room').append("<div class='" + className + "'>" + data.message + "</div>");
-		}
-
-
-		//적절한 위치로 스크롤
-		$('.scr_offset'+scr_num).ScrollTo({
-			duration: 500,
-			easing: 'linear'
-		});
+		socket.emit('join_the_room', {room:'<%=room%>'});
+		sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
+		
+		socket.on('client_on', function(data) {
+			receiveMessage(data);
 	});
 
 
@@ -73,21 +106,8 @@
 			if($('#type').val() == "")
 				return;
 			var str = $('#type').val();
-			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
-			//Additional Test (08.24)
-					$.ajax({
-						type:'post',
-						url:'./',
-						data : {
-							mode : 'send',
-							type : 'PlainText',
-							content : str,
-						}, success : function(data) {
-							alert("데이터베이스에 저장함 : " + data);
-						}
-					});
-			//Additional Test End
-		$('#type').val("");
+			sendMessage('PlainText', {text:str});
+			$('#type').val("");
 		});
 
 		var cnt;
@@ -135,20 +155,7 @@
 					cnt.remove();
 					isUpdated = true;
 					var s = JSON.parse(xhr.responseText);
-					socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
-					//Additional Test (08.24)
-					$.ajax({
-						type:'post',
-						url:'./',
-						data : {
-							mode : 'send',
-							type : 'File',
-							content : s.filename,
-						}, success : function(data) {
-							alert("데이터베이스에 저장함 : " + data);
-						}
-					});
-					//Additional Test End
+					sendMessage('File', {text:s.filename, original:s.originalname, size:s.size}); //Message Push
 				}
 			});
 

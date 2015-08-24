@@ -47,18 +47,9 @@ io.sockets.on('connection', function (socket) {
     //사용자가 채팅 페이지에 접근하면 이 부분에서 이벤트를 캐치한다.
 
     socket.on('join_the_room', function(data) {
-
         socket.join(data.room); //채팅방에 입장한다. room이란 프로젝트의 ID이다. 한정된 대화내용을 수신할 수 있다.
-           /*
-                소켓으로 주고받는 데이터의 종류는 3가지이다.
-                type : notification / File / plainText가 있다.
-                data : 문자열 데이터이다.임의의 key 값이다. 서버에서 이 값을 해석하여 디코딩한다.
-           */
-           //i) 유저의 입장 알림
-           //데이터베이스 서버에 연결한 뒤 임의의 키 쌍을 가져온다.
-        socket.emit('receive_msg', {id: '운영자', type: 'notification', message: '<center><b> ★★' + data.name + '님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속함을 알림(자기 자신)
-        socket.in(data.room).emit('receive_msg', {id: '운영자', type: 'notification', message: '<center><b> ★★' + data.name + '님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속함을 알림 (브로드캐스팅)
     });
+    /*
     socket.on('sendMessage', function(data) {
 
         if(data.type === 'File') {
@@ -74,6 +65,11 @@ io.sockets.on('connection', function (socket) {
             data.message = '<b>' + data.name + ' : </b>' +  data.message;
             socket.in(data.room).emit('receive_msg', data); //타인클라이언트 (룸)한테 이밋한다.
         }
+    });
+    */
+    socket.on('client_emit', function(data) {
+       socket.emit('client_on', data.signiture);
+       socket.in(data.room).emit('client_on', data.signiture); 
     });
 });
 

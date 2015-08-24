@@ -222,6 +222,12 @@ router.post('/:project/chat', function(req, res, next) {
 	//기본적인 권한 체크
 	if (!req.session.name) {
 		res.redirect('/user/login');
+	} else if ( req.session.pid != req.body.myid || req.session.name != req.body.myname ) {
+		res.status(500); 
+		res.render('error', {
+    		message: 'Bad Request',
+    		error: {}
+		});
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -235,19 +241,38 @@ router.post('/:project/chat', function(req, res, next) {
 					var year = today.getFullYear();
 					var month = today.getMonth() + 1;
 					var day = today.getDate();
-					var queries = {
-						project_id : result[0].id,
-						type : req.body.type,
-						content : req.body.content,
-						time :  year + '/' + month + '/' + day, //형식이 string이라..
-						writer: req.session.pid
-					};
-					connection.query('insert into notifications set ?', queries, function (err, result2) {
+					var queries;
+					if(req.body.type == "File") {
+						queries = {
+							project_id : result[0].id,
+							type : req.body.type,
+							content : req.body.content,
+							original : req.body.original,
+							size : req.body.size,
+							time :  year + '/' + month + '/' + day, //형식이 string이라..
+							writer: req.session.pid
+						};
+						
+					} else {
+						queries = {
+							project_id : result[0].id,
+							type : req.body.type,
+							content : req.body.content,
+							time :  year + '/' + month + '/' + day, //형식이 string이라..
+							writer: req.session.pid
+						};
+					}
+					connection.query('insert into chatting_content set ?', queries, function (err, result2) {
 						res.json({signiture:result2.insertId});
 					});
 					
 				} else if (req.body.mode == "receive") {
-					
+					//시그니쳐를 해석해서 데이터로 돌려준다
+					//type과 content를 돌려준다. + 기타 데이터도 돌려줘
+					//writer로 닉네임을 찾아 돌려준다.
+					connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where num = ?', [req.body.signiture], function(err, result2) {
+						res.json({type:result2[0].type, content:result2[0].content, writer:result2[0].writer, writer_name:result2[0].name, date:result2[0].created_date, original:result2[0].original, size:result2[0].size});
+					});
 				} else {
 					res.status(500); 
 					res.render('error', {
