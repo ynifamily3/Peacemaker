@@ -167,9 +167,9 @@ router.get('/:project/chat', function(req, res, next) {
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				var ws_url = 'node.niceb5y.net';
+				var ws_url = 'pm.niceb5y.net';
 				if (process.env.NODE_ENV != 'production') {
-					ws_url = 'localhost';
+					ws_url = '127.0.0.1';
 				}
 				res.render('project_chat', {
 					auth_token: req.sessionID,
@@ -198,6 +198,63 @@ router.get('/:project/chat', function(req, res, next) {
 						'chat.css'
 					]
 				});
+			}
+		});
+	}
+});
+
+router.post('/:project/chat', function(req, res, next) {
+	//send모드 : 유저가 전달한 내용을 database에 저장하고 생성된 시그니처를 돌려준다.
+	//receive모드 : 시그니처를 기반으로 data를 찾아 돌려준다.
+	//req.body ~ 로 post variable를 받을 수 있다.
+	/*
+	받아들이는 변수 목록
+		mode : send / receive
+		send 의 경우  {
+			type : File / PlainText / notification
+			content : FileSigniture / message / message
+		}
+		receive 의 경우 {
+			signiture : Signiture Value
+		}
+	*/
+	//수정 : 시그니처 생성 대신 그냥 메모의 Primary Key를 가져다 쓰기로 함.
+	//기본적인 권한 체크
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				//인증 통과
+				if (req.body.mode == "send") {
+					//유저가 채팅 내용을 전송했다. 데이터베이스에 저장 후 시그니처-Primary Key-를 생성 후 돌려준다.
+					var today = new Date();
+					var year = today.getFullYear();
+					var month = today.getMonth() + 1;
+					var day = today.getDate();
+					var queries = {
+						project_id : result[0].id,
+						type : req.body.type,
+						content : req.body.content,
+						time :  year + '/' + month + '/' + day, //형식이 string이라..
+						writer: req.session.pid
+					};
+					connection.query('insert into notifications set ?', queries, function (err, result2) {
+						res.json({signiture:result2.insertId});
+					});
+					
+				} else if (req.body.mode == "receive") {
+					
+				} else {
+					res.status(500); 
+					res.render('error', {
+    					message: 'Bad Request',
+    					error: {}
+					});
+				}
 			}
 		});
 	}

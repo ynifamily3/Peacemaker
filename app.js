@@ -41,16 +41,21 @@ app.use(session({
 
 //var RedisStore = require('connect-redis')(session);
 
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server); //소켓 서버를 열어 둔다
 
 io.sockets.on('connection', function (socket) {
+    //사용자가 채팅 페이지에 접근하면 이 부분에서 이벤트를 캐치한다.
 
     socket.on('join_the_room', function(data) {
-        //해당 프로젝트의 소속인지를 체크한다.
-        console.log ('클라한테 받은 체크데이터 : ' + data.auth);
 
-        socket.join(data.room); //채팅방에 입장한다. (소켓 수신 한정자)
-
+        socket.join(data.room); //채팅방에 입장한다. room이란 프로젝트의 ID이다. 한정된 대화내용을 수신할 수 있다.
+           /*
+                소켓으로 주고받는 데이터의 종류는 3가지이다.
+                type : notification / File / plainText가 있다.
+                data : 문자열 데이터이다.임의의 key 값이다. 서버에서 이 값을 해석하여 디코딩한다.
+           */
+           //i) 유저의 입장 알림
+           //데이터베이스 서버에 연결한 뒤 임의의 키 쌍을 가져온다.
         socket.emit('receive_msg', {id: '운영자', type: 'notification', message: '<center><b> ★★' + data.name + '님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속함을 알림(자기 자신)
         socket.in(data.room).emit('receive_msg', {id: '운영자', type: 'notification', message: '<center><b> ★★' + data.name + '님이 입장하셨습니다. ★★</b></center>'}); //누군가 접속함을 알림 (브로드캐스팅)
     });

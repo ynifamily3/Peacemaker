@@ -22,7 +22,6 @@
 					</label>
 					<input type="file" id="file" name="uploadFile"/>
 				</div>
-				<!--<input class="btn btn-default" type="submit" value="업로드" />-->
 			</form>
 			<!--말할수 있는 부분-->
 			<form action="#" id="cf">
@@ -75,6 +74,19 @@
 				return;
 			var str = $('#type').val();
 			socket.emit('sendMessage', {message:str, room:'<%=room%>', name:'<%= user.name %>', type:'plainText'});
+			//Additional Test (08.24)
+					$.ajax({
+						type:'post',
+						url:'./',
+						data : {
+							mode : 'send',
+							type : 'PlainText',
+							content : str,
+						}, success : function(data) {
+							alert("데이터베이스에 저장함 : " + data);
+						}
+					});
+			//Additional Test End
 		$('#type').val("");
 		});
 
@@ -107,12 +119,13 @@
 				},
 				uploadProgress: function(event, position, total, percentComplete) {
 					var percentVal = percentComplete + '%';
-					cnt.html('<img src="'+thumbnail+'" width="50"/> 파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
+					//cnt.html('<img src="'+thumbnail+'" width="50"/> 파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
+					cnt.html('파일을 전송 중입니다..<br>image.jpg ('+ percentVal+')');
 					//bar.width(percentVal)
 					//percent.html(percentVal);
 				},
 				success: function() {
-					var percentVal = '100%';
+					//var percentVal = '100%';
 					cnt.html('전송이 완료되었어요!');
 					//bar.width(percentVal)
 					//percent.html(percentVal);
@@ -123,6 +136,19 @@
 					isUpdated = true;
 					var s = JSON.parse(xhr.responseText);
 					socket.emit('sendMessage', {fileName: s.originalname, path: s.filename, room:'<%=room%>', name:'<%= user.name %>', type:'File'});
+					//Additional Test (08.24)
+					$.ajax({
+						type:'post',
+						url:'./',
+						data : {
+							mode : 'send',
+							type : 'File',
+							content : s.filename,
+						}, success : function(data) {
+							alert("데이터베이스에 저장함 : " + data);
+						}
+					});
+					//Additional Test End
 				}
 			});
 
@@ -138,7 +164,8 @@
 			reader.onload = (function(theFile) {
 				return function(e) {
 					//document.getElementById('list').innerHTML = ['<img src="', e.target.result,'" title="', theFile.name, '" width="50"/>'].join('');
-					thumbnail = e.target.result;
+					//thumbnail = e.target.result;
+					thumbnail='#';//렉걸려 ㅡㅡ
 					$("#multiform").submit();
 				};
 			})(f);
