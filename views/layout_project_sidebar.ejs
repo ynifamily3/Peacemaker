@@ -7,7 +7,6 @@
 		<a href="/p/<%= project.url %>/chat" class="list-group-item"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> 채팅</a>
 		<% if (project.hangout_url) { %>
 		<a href="https://hangoutsapi.talkgadget.google.com/hangouts/_/<%= project.hangout_url %>" class="list-group-item" target="_blank"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> 행아웃</a>
-		<!-- https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=756768503179 -->
 		<% } else { %>
 		<a href="/p/<%= project.url %>/hangout" class="list-group-item"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> 행아웃</a>
 		<% }; %>
