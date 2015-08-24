@@ -87,7 +87,7 @@
 			'red': 'danger',
 			'blue': 'active'
 		}
-		return '<tr class="' + colorObject[color] + '"  onclick="sf('+ id +');"><td><input type="checkbox" class="memo_' + id + ' onclick="return false; ' + chk + '/>&nbsp;&nbsp;<b>'+ name + '</b> ' + content + '</td></tr>';
+		return '<tr class="' + colorObject[color] + '"  onclick="sf('+ id +');"><td><input type="checkbox" class="memo_' + id + ' onclick="return false; ' + chk + '/>&nbsp;&nbsp;<b>'+ name + '</b> ' + content.autoLink({ target: "_blank"}) + '</td></tr>';
 	}
 
 	function sf(mid) {

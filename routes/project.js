@@ -394,6 +394,9 @@ router.get('/:project/memo', csrfProtection, function(req, res, next) {
 				},
 				csrfToken: req.csrfToken(),
 				title: result[0].name,
+				js: [
+					'autolink.js'
+				],
 				css: [
 					'memo.css'
 				]
