@@ -51,13 +51,13 @@ router.get('/', function(req, res, next) {
 	}
 });
 
-router.get('/dashboard', function(req, res, next) {
+router.get('/dashboard', csrfProtection, function(req, res, next) {
 	if (!req.session.username) {
 		res.redirect('/user/login');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, project_result) {
 			if (err) throw err;
-			connection.query('select *, projects.name as `title` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ?', [req.session.pid], function(err, notification_result) {
+			connection.query('select *, projects.name as `title`, notifications.id as `notification_id` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ?', [req.session.pid], function(err, notification_result) {
 				if (err) throw err;
 				console.log(notification_result);
 				res.render('dashboard', {
@@ -67,6 +67,7 @@ router.get('/dashboard', function(req, res, next) {
 						pid: req.session.pid
 					},
 					title: '대시보드',
+					csrfToken: req.csrfToken(),
 					projects:project_result,
 					notifications:notification_result
 				});

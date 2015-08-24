@@ -1,0 +1,46 @@
+<div class="panel panel-default">
+	<div class="panel-heading">알림</div>
+	<div class="alert alert-danger alert-invalid-value hidden" role="alert">
+		<p>오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.</p>
+	</div>
+	<ul class="list-group">
+		<% if (notifications.length) { %>
+		<% for (var i = 0; i < notifications.length; i++) { %>
+			<% if (notifications[i].type == 101) { %>
+				<li href="#" class="list-group-item">
+					<a href="/u/<%= notifications[i].username %>"><%= notifications[i].name %></a>님이 <a href="/p/<%= notifications[i].url %>"><%= notifications[i].title %></a> 프로젝트에 가입을 신청하셨습니다. 승인하시겠습니까?
+					<div class="btn-group btn-group-xs pull-right" role="group" aria-label="...">
+					  <button type="button" class="btn btn-success" onclick="send('accept', <%= notifications[i].notification_id %>)">
+					  	<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+					  </button>
+					  <button type="button" class="btn btn-danger" onclick="send('dismiss', <%= notifications[i].notification_id %>)">
+					  	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					  </button>
+					</div>
+				</li>
+			<% }; %>	
+		<% } %>
+		<% } else { %>
+		<li href="#" class="list-group-item disabled">새로운 알림이 없습니다.</li>
+		<% };%>
+	</ul>
+	<script>
+		function send(action, id) {
+			$.ajax({
+				type: 'POST',
+				url: '/n/' + id + '/' + action,
+				data: {
+					_csrf: '<%= csrfToken %>'
+				},
+				success: function(data) {
+					if (data.status == 'success') {
+						window.location.reload();
+					} else {
+						console.log(data);
+						$('.alert-invalid-value').removeClass('hidden');
+					}
+				}
+			});
+		}
+	</script>
+</div>

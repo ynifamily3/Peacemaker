@@ -29,7 +29,7 @@ function phone_format(num) {
 	return num.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 }
 
-router.get('/:project', function(req, res, next) {
+router.get('/:project', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -38,7 +38,7 @@ router.get('/:project', function(req, res, next) {
 			if (result.length === 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				connection.query('select *, projects.name as `title` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ? and project_id = ?', [req.session.pid, result[0].id], function(err, notification_result) {
+				connection.query('select *, projects.name as `title`, notifications.id as `notification_id` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ? and project_id = ?', [req.session.pid, result[0].id], function(err, notification_result) {
 					if (err) throw err;
 					res.render('project_index', {
 						user: {
@@ -54,6 +54,7 @@ router.get('/:project', function(req, res, next) {
 							admin_id: result[0].admin_id,
 							hangout_url: result[0].hangout_url
 						},
+						csrfToken: req.csrfToken(),
 						notifications: notification_result,
 						title: result[0].name
 					});
@@ -314,7 +315,7 @@ router.post('/:project/join', parseForm, csrfProtection, function(req, res, next
 					'err': 'permission_denied'
 				});
 			} else {
-				connection.query('select notifications.subject_id, notifications.object_id, notifications.type, users.name, users.username, projects.name as title, projects.url from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+				connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
 					if (err) throw err;
 					if (result.length == 0) {
 						var request = {
@@ -332,7 +333,7 @@ router.post('/:project/join', parseForm, csrfProtection, function(req, res, next
 					} else {
 						res.json({
 							'status': 'fail',
-							'err': 'duplicate request'
+							'err': 'duplicate_request'
 						});
 					}
 				});
