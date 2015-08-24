@@ -34,25 +34,29 @@ router.get('/:project', function(req, res, next) {
 		res.redirect('/user/login');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
-			if (err) {throw err;}
+			if (err) throw err;
 			if (result.length === 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				res.render('project_index', {
-					user: {
-						name: req.session.name,
-						username: req.session.username,
-						pid: req.session.pid
-					},
-					project: {
-						id: result[0].id,
-						url: result[0].url,
-						name: result[0].name,
-						desc: result[0].desc,
-						admin_id: result[0].admin_id,
-						hangout_url: result[0].hangout_url
-					},
-					title: result[0].name
+				connection.query('select *, projects.name as `title` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ? and project_id = ?', [req.session.pid, result[0].id], function(err, notification_result) {
+					if (err) throw err;
+					res.render('project_index', {
+						user: {
+							name: req.session.name,
+							username: req.session.username,
+							pid: req.session.pid
+						},
+						project: {
+							id: result[0].id,
+							url: result[0].url,
+							name: result[0].name,
+							desc: result[0].desc,
+							admin_id: result[0].admin_id,
+							hangout_url: result[0].hangout_url
+						},
+						notifications: notification_result,
+						title: result[0].name
+					});
 				});
 			}
 		});
@@ -310,7 +314,7 @@ router.post('/:project/join', parseForm, csrfProtection, function(req, res, next
 					'err': 'permission_denied'
 				});
 			} else {
-				connection.query('select * from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
+				connection.query('select notifications.subject_id, notifications.object_id, notifications.type, users.name, users.username, projects.name as title, projects.url from notifications where subject_id = ? and project_id = ? and type = 101', [req.session.pid, project_result[0].id], function(err, result) {
 					if (err) throw err;
 					if (result.length == 0) {
 						var request = {

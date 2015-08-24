@@ -55,16 +55,21 @@ router.get('/dashboard', function(req, res, next) {
 	if (!req.session.username) {
 		res.redirect('/user/login');
 	} else {
-		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, result) {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, project_result) {
 			if (err) throw err;
-			res.render('dashboard', {
-				user: {
-					name: req.session.name,
-					username: req.session.username,
-					pid: req.session.pid
-				},
-				title: '대시보드',
-				projects:result
+			connection.query('select *, projects.name as `title` from notifications join projects on projects.id = notifications.project_id join users on users.pid = notifications.subject_id where object_id = ?', [req.session.pid], function(err, notification_result) {
+				if (err) throw err;
+				console.log(notification_result);
+				res.render('dashboard', {
+					user: {
+						name: req.session.name,
+						username: req.session.username,
+						pid: req.session.pid
+					},
+					title: '대시보드',
+					projects:project_result,
+					notifications:notification_result
+				});
 			});
 		});
 	}

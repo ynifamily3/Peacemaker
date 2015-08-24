@@ -16,9 +16,17 @@
 <div class="col-md-9">
 	<div class="panel panel-default">
 		<div class="panel-heading">알림</div>
-		<div class="list-group">
-			<a href="#" class="list-group-item disabled">새로운 알림이 없습니다.</a>
-		</div>
+		<ul class="list-group">
+			<% if (notifications.length) { %>
+			<% for (var i = 0; i < notifications.length; i++) { %>
+				<% if (notifications[i].type == 101) { %>
+					<li href="#" class="list-group-item"><a href="/u/<%= notifications[i].username %>"><%= notifications[i].name %></a>님이 <a href="/p/<%= notifications[i].url %>"><%= notifications[i].title %></a> 프로젝트에 가입을 신청하셨습니다. 승인하시겠습니까?</li>
+				<% }; %>	
+			<% } %>
+			<% } else { %>
+			<li href="#" class="list-group-item disabled">새로운 알림이 없습니다.</li>
+			<% };%>
+		</ul>
 	</div>
 </div>
 <% include layout_footer %>
