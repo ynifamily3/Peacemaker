@@ -169,7 +169,7 @@ router.get('/:project/chat', function(req, res, next) {
 			} else {
 				var ws_url = 'node.niceb5y.net';
 				if (process.env.NODE_ENV != 'production') {
-					ws_url = '192.168.0.10';
+					ws_url = 'localhost';
 				}
 				res.render('project_chat', {
 					auth_token: req.sessionID,
@@ -368,7 +368,7 @@ router.post('/:project/join/cancel', parseForm, csrfProtection, function(req, re
 	}
 });
 
-router.get('/:project/memo', function(req, res, next) {
+router.get('/:project/memo', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 		return;
@@ -392,6 +392,7 @@ router.get('/:project/memo', function(req, res, next) {
 					admin_id: result[0].admin_id,
 					hangout_url: result[0].hangout_url
 				},
+				csrfToken: req.csrfToken(),
 				title: result[0].name,
 				css: [
 					'memo.css'
@@ -399,7 +400,6 @@ router.get('/:project/memo', function(req, res, next) {
 			});
 		}
 	});
-
 });
 
 router.post('/:project/memo', function(req, res, next) {
@@ -412,24 +412,27 @@ router.post('/:project/memo', function(req, res, next) {
 			res.json({});
 		} else {
 			var data = {
-				project: req.body.project,
+				project: result[0].id,
 				color: req.body.color,
 				is_finished: false,
 				writer: req.session.pid,
 				content: req.body.content
 			}
-			console.log("삽입 명령.." + JSON.stringify(data));
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;
-				res.json(data);
+				res.json({
+					'status': 'success',
+					'id': result.insertId
+				});
 			});
 		}
 	});
 });
 
-router.get('/:project/memo/get', function(req, res, next) {
+
+router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.json({'status': 'fail', 'err': 'permission_denied'});
 		return;
 	}
 	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
@@ -437,43 +440,29 @@ router.get('/:project/memo/get', function(req, res, next) {
 		if(result.length == 0) {
 			res.redirect('/p/' + req.params.project + '/join');
 		} else {
-			if(!req.query.page || req.query.page % 1 !== 0 || req.query.page < 1) {
-				req.query.page = 1;
+			if(req.params.page % 1 !== 0 || req.params.page < 1 || !validator.isNumeric(req.params.page)) {
+				req.params.page = 1;
 			}
-			connection.query('select content, name, color, is_finished, memo_id from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.query.page - 1) * 10], function(err, memo_result) {
+			connection.query('select * from memo_content join users on users.pid = memo_content.writer where project = ? order by memo_id desc limit ?,10', [result[0].id, (req.params.page - 1) * 10], function(err, result) {
 			if (err) throw err;
-				connection.query('select Count(memo_id) from memo_content where project = ?', [result[0].id], function(err, cresult) {
-				var json = cresult[0];
-				var cnt;
-				for (var key in json) {
-					cnt = json[key];
-					console.log(json[key]);
-				}
-				if (err) throw err;
-					res.writeHead(200, {"Content-Type:": "text/html"});
-					memo_result.push({cl:cnt});
-					var send = JSON.stringify(memo_result);
-					res.end(send);
+				res.json({
+					'status': 'success',
+					'memo': result
 				});
 			});
 		}
 	});
-
 });
 
-router.get('/:project/memo/chk', function (req, res, next) {
-	//1. 해당 memo_id 에서 추적
-	//2. checked 상태를 반전
-	//3. 결과를 리턴함. (0 or 1)
-	connection.query('select is_finished from memo_content where memo_id=?', [req.query.memo_id], function (err, result) {
-		console.log("이잉 : " + +!result[0].is_finished);
-		connection.query('update memo_content set is_finished=? where memo_id=?', [""+ +!result[0].is_finished, req.query.memo_id], function (err, res2) {
-			res.writeHead(200, {"Content-Type:": "text/html"});
-			res.end(""+ +!result[0].is_finished);
-		});
-			
+router.post('/:project/memo/check/:id', parseForm, csrfProtection, function (req, res, next) {
+	connection.query('select is_finished from memo_content where memo_id = ?', [req.params.id], function (err, result) {
+		var is_finished = result[0].is_finished ? 0 : 1;
+		connection.query('update memo_content set is_finished = ? where memo_id = ?', [is_finished, req.params.id], function (err, result) {
+			res.json({
+				'is_finished': is_finished
+			});
+		});	
 	});
-
 });
 
 module.exports = router;
