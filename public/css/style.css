@@ -4,3 +4,11 @@ input.ng-touched.ng-invalid {
 nav#navbar {
 	margin-top: 15px;
 }
+
+.list-group-item {
+	transition: all 0.2s ease-out;
+}
+
+.list-group-item:hover {
+	font-size: 1.2em;
+}
