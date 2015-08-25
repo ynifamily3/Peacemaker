@@ -502,7 +502,8 @@ router.get('/:project/memo', csrfProtection, function(req, res, next) {
 				csrfToken: req.csrfToken(),
 				title: result[0].name,
 				js: [
-					'autolink.js'
+					'autolink.js',
+					'htmlspecialchars.js'
 				],
 				css: [
 					'memo.css'
@@ -526,7 +527,7 @@ router.post('/:project/memo', function(req, res, next) {
 				color: req.body.color,
 				is_finished: false,
 				writer: req.session.pid,
-				content: req.body.content
+				content: htmlspecialchars(req.body.content)
 			}
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;
