@@ -64,6 +64,10 @@
 	word-break:break-all;
 }
 
+.ballon img {
+	width: 100%;
+}
+
 .me {
 	animation:CNU 0.5s;
 	margin-left:45%;
