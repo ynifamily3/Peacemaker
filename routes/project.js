@@ -252,19 +252,18 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 					var queries;
 					if(req.body.type == "File") {
 						queries = {
-							project_id : result[0].id,
-							type : req.body.type,
-							content : req.body.content,
-							original : req.body.original,
-							size : req.body.size,
+							project_id: result[0].id,
+							type: req.body.type,
+							content: htmlspecialchars(req.body.content),
+							original: req.body.original,
+							size: req.body.size,
 							writer: req.session.pid
 						};
-						
 					} else {
 						queries = {
-							project_id : result[0].id,
-							type : req.body.type,
-							content : req.body.content,
+							project_id: result[0].id,
+							type: req.body.type,
+							content: htmlspecialchars(req.body.content),
 							writer: req.session.pid
 						};
 					}
