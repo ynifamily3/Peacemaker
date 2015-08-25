@@ -47,7 +47,7 @@
 	border: 1px solid #e8e8e8;
 	background-color: rgba(0, 0, 0, 0);
 	font-family: sans-serif;
-	padding-left:60px;
+	padding-left:90px;
 }
 
 .ballon {
@@ -103,7 +103,8 @@
 
 .image-upload {
 	position:absolute;
-
+	left:15px;
+	top:532px;
 }
 
 .notification {

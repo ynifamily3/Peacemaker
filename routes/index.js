@@ -76,16 +76,43 @@ router.get('/dashboard', csrfProtection, function(req, res, next) {
 	}
 });
 
-router.post('/files', upload.single('uploadFile'), function(req, res) {
-	var file = {
-		path: req.file.filename,
-		original: req.file.originalname,
-		size: req.file.size,
-		allow_project: -1
-	};
+var fields = [
+	{name : 'uploadFile', maxCount:1},
+	{name : 'uploadImage', maxCount:1}
+];
+
+router.post('/files', upload.fields(fields), function(req, res) {
+	//console.log("1:"+req.files['uploadFile']);
+	//console.log("2:"+req.files['uploadImage']);
+	var file;
+	var ib;
+	if(req.files['uploadFile']) {
+		ib = 1;
+		file = {
+			path: req.files['uploadFile'][0].filename,
+			original: req.files['uploadFile'][0].originalname,
+			size: req.files['uploadFile'][0].size,
+			allow_project: -1
+		};
+	} else {
+		ib = 2;
+		file = {
+			path: req.files['uploadImage'][0].filename,
+			original: req.files['uploadImage'][0].originalname,
+			size: req.files['uploadImage'][0].size,
+			allow_project: -1
+		};
+	}
 	connection.query('insert into files set ?', file, function(err, result) {
 		if (err) throw err;
-		res.json(req.file);
+		if(ib == 1) {
+			console.log(req.files['uploadFile']);
+			res.json(req.files['uploadFile']);
+		}
+		else {
+			console.log(req.files['uploadImage']);
+			res.json(req.files['uploadImage']);
+		}
 	});
 });
 

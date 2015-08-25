@@ -8,8 +8,13 @@
 	var thumbnail; //썸네일 이미지 저장소
 	var myname = '<%=user.name%>';
 	var myid = '<%=user.pid%>';
+	var imgup = false;
 	function GetFileName() {
-		var fileInput = document.getElementsByClassName('uniqueUpload')[0];
+		var fileInput;
+		if(imgup)
+			fileInput = document.getElementById('imagefile');
+		else
+			fileInput = document.getElementsByClassName('uniqueUpload')[0];
 		var fileName = fileInput.value.split(/(\\|\/)/g).pop();
 		return fileName;
 	}
@@ -77,6 +82,11 @@
 						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+				} else if(data.type == "Image") {
+					if(isme)
+						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+					else
+						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img src = '/files/" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
 					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
@@ -106,12 +116,22 @@
 		<div class="control">
 			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data" method="POST">
 				<div class="form-group image-upload">
-					<label for="file">
-						<p class="btn btn-primary">
+					<!--<label for="file">-->
+						<div class="dropup">
+							<button class="btn btn-default" type="button" data-toggle="dropdown">Upload</button>
+							<ul class="dropdown-menu">
+								<li><a href="#"><label for="location">위치</label></a></li>
+								<li><a href="#"><label for="imagefile">이미지</label></a></li></label>
+								<li><a href="#"><label for="file">파일</label></a></li>
+    						</ul>
+  						</div>
+						<!--<p class="btn btn-primary">
 							<span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+							
 						</p>
-					</label>
+					</label>-->
 					<input type="file" id="file" name="uploadFile" class="uniqueUpload"/>
+					<input type="file" id="imagefile" name="uploadImage" accept="image/x-png, image/gif, image/jpeg" />
 				</div>
 			</form>
 			<!--말할수 있는 부분-->
@@ -141,13 +161,18 @@
 						className = "ballon me scr_offset" + scr_num;
 						isme = true;
 					}
-					var noticlassName = "scr_offset" + scr_num;
+					//var noticlassName = "scr_offset" + scr_num;
 					if(data[i].type == "File") {
 						if(isme) {
 							$('#chattingWindow .room').append("<div class='" + className +"'>" + "<a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 						} else {
 							$('#chattingWindow .room').append("<div class='" + className +"'><b>" + data[i].name + "</b> <a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 						}
+					} else if(data[i].type == "Image") {
+							if(isme)
+								$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+							else
+								$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					} else if(data[i].type == "notification") {
 						//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 					} else {
@@ -204,7 +229,6 @@
 					cnt.html('파일을 전송 중입니다..<br>'+ GetFileName() +' ('+ percentVal+')');
 				},
 				success: function() {
-					cnt.html('전송이 완료되었어요!');
 				},
 				complete: function(xhr) {
 					$("form").each(function() {
@@ -213,14 +237,21 @@
 					cnt.remove();
 					isUpdated = true;
 					var s = JSON.parse(xhr.responseText);
-							sendMessage('File', {text:s.filename, original:s.originalname, size:s.size}); //Message Push
-						}
-					});
+					if(!imgup)
+							sendMessage('File', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
+					else
+							sendMessage('Image', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
+				}
+			});
 		})();
 
 		if (window.FileReader) {
 			function handleFileSelect(evt) {
 				var files = evt.target.files;
+				imgup = false;
+				if(evt.target.name == "uploadImage") {
+					imgup = true;
+				}
 				var f = files[0];
 				var reader = new FileReader();
 				reader.onload = (function(theFile) {
@@ -235,6 +266,7 @@
 			alert('This browser does not support FileReader');
 		}
 		document.getElementById('file').addEventListener('change', handleFileSelect, false);
+		document.getElementById('imagefile').addEventListener('change', handleFileSelect, false);
 		setInterval(function() {
 			renderTime();
 		}, 30000);
