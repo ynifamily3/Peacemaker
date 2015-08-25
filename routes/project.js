@@ -212,22 +212,6 @@ router.get('/:project/chat', csrfProtection, function(req, res, next) {
 });
 
 router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next) {
-	//send모드 : 유저가 전달한 내용을 database에 저장하고 생성된 시그니처를 돌려준다.
-	//receive모드 : 시그니처를 기반으로 data를 찾아 돌려준다.
-	//req.body ~ 로 post variable를 받을 수 있다.
-	/*
-	받아들이는 변수 목록
-		mode : send / receive
-		send 의 경우  {
-			type : File / PlainText / notification
-			content : FileSigniture / message / message
-		}
-		receive 의 경우 {
-			signiture : Signiture Value
-		}
-	*/
-	//수정 : 시그니처 생성 대신 그냥 메모의 Primary Key를 가져다 쓰기로 함.
-	//기본적인 권한 체크
 	if (!req.session.name) {
 		res.redirect('/user/login/back');
 	} else if ( req.session.pid != req.body.myid || req.session.name != req.body.myname ) {
@@ -245,12 +229,9 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 				//인증 통과
 				if (req.body.mode == "send") {
 					//유저가 채팅 내용을 전송했다. 데이터베이스에 저장 후 시그니처-Primary Key-를 생성 후 돌려준다.
-					var today = new Date();
-					var year = today.getFullYear();
-					var month = today.getMonth() + 1;
-					var day = today.getDate();
 					var queries;
-					if(req.body.type == "File") {
+					if(req.body.type == "File" || req.body.type == "Image") {
+						console.log("★req.body.content : " + req.body.content);
 						queries = {
 							project_id : result[0].id,
 							type : req.body.type,
@@ -273,9 +254,6 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 					});
 					
 				} else if (req.body.mode == "receive") {
-					//시그니쳐를 해석해서 데이터로 돌려준다
-					//type과 content를 돌려준다. + 기타 데이터도 돌려줘
-					//writer로 닉네임을 찾아 돌려준다.
 					connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where num = ?', [req.body.signiture], function(err, result2) {
 						res.json({type:result2[0].type, content:result2[0].content, writer:result2[0].writer, writer_name:result2[0].name, date:result2[0].created_date, original:result2[0].original, size:result2[0].size});
 					});
