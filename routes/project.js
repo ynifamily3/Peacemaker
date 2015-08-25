@@ -158,7 +158,7 @@ router.get('/:project/calendar', function(req, res, next) {
 	}
 });
 
-router.get('/:project/chat', function(req, res, next) {
+router.get('/:project/chat', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -189,7 +189,9 @@ router.get('/:project/chat', function(req, res, next) {
 					title: result[0].name,
 					room: result[0].id,
 					ws_addr: ws_url,
+					csrfToken: req.csrfToken(),
 					js: [
+						'moment.js',
 						'jquery-scrollto.js',
 						'socket.io.js',
 						'jquery.form.js'
@@ -203,7 +205,7 @@ router.get('/:project/chat', function(req, res, next) {
 	}
 });
 
-router.post('/:project/chat', function(req, res, next) {
+router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next) {
 	//send모드 : 유저가 전달한 내용을 database에 저장하고 생성된 시그니처를 돌려준다.
 	//receive모드 : 시그니처를 기반으로 data를 찾아 돌려준다.
 	//req.body ~ 로 post variable를 받을 수 있다.
@@ -249,7 +251,6 @@ router.post('/:project/chat', function(req, res, next) {
 							content : req.body.content,
 							original : req.body.original,
 							size : req.body.size,
-							time :  year + '/' + month + '/' + day, //형식이 string이라..
 							writer: req.session.pid
 						};
 						
@@ -258,7 +259,6 @@ router.post('/:project/chat', function(req, res, next) {
 							project_id : result[0].id,
 							type : req.body.type,
 							content : req.body.content,
-							time :  year + '/' + month + '/' + day, //형식이 string이라..
 							writer: req.session.pid
 						};
 					}
@@ -285,7 +285,7 @@ router.post('/:project/chat', function(req, res, next) {
 	}
 });
 
-router.get('/:project/cc.do', function (req,res,next) {
+router.post('/:project/chat/history', parseForm, csrfProtection, function (req,res,next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -296,7 +296,7 @@ router.get('/:project/cc.do', function (req,res,next) {
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				connection.query('select num, project_id, type, content, time, writer, original, size, created_date, pid, name, username from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
+				connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
 					if (err) throw err;
 					res.json(result);
 				});
