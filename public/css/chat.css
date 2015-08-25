@@ -116,3 +116,14 @@ label p.btn {
 label p.btn span{
 	line-height: 26px;
 }
+
+.relativeTime {
+	font-size: 0.8em;
+	font-style: italic;
+	margin: 5px 0 0 0;
+	text-align: right;
+	color: #333;
+}
+.notification .relativeTime{
+	text-align: left;
+}
