@@ -17,12 +17,12 @@
 		$.ajax({
 			type:'post',
 			url:'/p/<%= project.url %>/chat',
-			data : {
-				mode : 'send',
-				type : mtype,
-				myname:myname,
-				myid:myid,
-				content : data.text,
+			data: {
+				mode: 'send',
+				type: mtype,
+				myname: myname,
+				myid: myid,
+				content: data.text,
 				original: data.original,
 				size: data.size,
 				_csrf: '<%= csrfToken %>'
@@ -239,6 +239,5 @@
 			renderTime();
 		}, 30000);
 	</script>
-
 </div>
 <% include layout_footer %>
