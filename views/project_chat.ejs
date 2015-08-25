@@ -172,7 +172,7 @@
 							if(isme)
 								$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 							else
-								$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].writer_name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+								$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					} else if(data[i].type == "notification") {
 						//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 					} else {
