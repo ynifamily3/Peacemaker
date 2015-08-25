@@ -97,7 +97,9 @@
 	<script type="text/javascript">
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
-		var socket = io.connect('ws://<%= ws_addr %>:8080');
+		var wsurl = window.location.href.split("/")[2].split(":")[0];
+		//var socket = io.connect('ws://<%= ws_addr %>:8080');
+		var socket = io.connect('ws://' + wsurl + ':8080');
 		//기존 채팅 내용 불러오기
 		$.ajax({
 			type:'get',
