@@ -1,3 +1,5 @@
+USE `peacemaker`;
+
 CREATE TABLE IF NOT EXISTS `memo_content` (
   `memo_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `project` INT NOT NULL,

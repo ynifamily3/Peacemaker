@@ -1,3 +1,5 @@
+USE `peacemaker`;
+
 CREATE TABLE IF NOT EXISTS `chatting_content` (
   `num` INT(11) NOT NULL AUTO_INCREMENT,
   `project_id` INT(11) NULL,

@@ -53,7 +53,6 @@ CREATE TABLE IF NOT EXISTS `chatting_content` (
   `project_id` INT(11) NULL,
   `type` VARCHAR(20) NULL,
   `content` VARCHAR(1400) NULL,
-  `time` VARCHAR(45) NULL,
   `writer` INT(11) NULL,
   `original` VARCHAR(512) NULL,
   `size` INT(20) NULL,
