@@ -285,6 +285,26 @@ router.post('/:project/chat', function(req, res, next) {
 	}
 });
 
+router.get('/:project/cc.do', function (req,res,next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		var pid;
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			pid = result[0].id;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				connection.query('select num, project_id, type, content, time, writer, original, size, created_date, pid, name, username from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
+					if (err) throw err;
+					res.json(result);
+				});
+			}
+		});
+	}
+});
+
 router.get('/:project/hangout', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');

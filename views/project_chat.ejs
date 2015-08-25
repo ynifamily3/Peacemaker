@@ -98,12 +98,45 @@
 	$('body').ready(function () {$('#type').focus();});
 	$('body').keydown(function () {$('#type').focus();});
 		var socket = io.connect('ws://<%= ws_addr %>:8080');
-		socket.emit('join_the_room', {room:'<%=room%>'});
-		sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
-		
+		//기존 채팅 내용 불러오기
+		$.ajax({
+			type:'get',
+			url:'./cc.do',
+			success : function (data) {
+				for(var i = 0; i < data.length; i++) {
+					++scr_num;
+					var isme = false;
+					var className = "ballon scr_offset" + scr_num;
+					if(data[i].pid == myid) {
+						className = "ballon me scr_offset" + scr_num;
+						isme = true;
+					}
+					var noticlassName = "scr_offset" + scr_num;
+					if(data[i].type == "File") {
+					if(isme)
+						$('#chattingWindow .room').append("<div class='" + className +"'>" + "<a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br>"+data[i].created_date+"</div>");
+					else
+						$('#chattingWindow .room').append("<div class='" + className +"'><b>" + data[i].name + "</b> <a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br>"+data[i].created_date+"</div>");
+					} else if(data[i].type == "notification") {
+						//$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data[i].content + "</div>");
+					} else {
+						if(isme)
+							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content + "<br>"+data[i].created_date+"</div>");
+						else
+							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content + "<br>"+data[i].created_date+"</div>");
+					}
+				}
+				$('.scr_offset'+scr_num).ScrollTo({
+					duration: 500,
+					easing: 'linear'
+				});
+				socket.emit('join_the_room', {room:'<%=room%>'});
+				sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
+			}
+		});
 		socket.on('client_on', function(data) {
 			receiveMessage(data);
-	});
+		});
 
 
 		$('#cf').submit(function (event) {
