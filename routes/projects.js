@@ -50,7 +50,7 @@ router.post('/is_exist', parseForm, csrfProtection, function(req, res, next) {
 
 router.get('/new', csrfProtection, function(req, res, next) {
 	if (!req.session.username) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 		return;
 	}
 	res.render('project_new', {

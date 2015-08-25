@@ -53,7 +53,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/dashboard', csrfProtection, function(req, res, next) {
 	if (!req.session.username) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ?', [req.session.pid], function(err, project_result) {
 			if (err) throw err;

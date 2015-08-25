@@ -55,7 +55,11 @@
 			data: $('form').serialize(),
 			success: function(data) {
 				if (data.status == 'success') {
+					<% if (locals.go_back && go_back) { %>
+					window.history.back();
+					<% } else { %>
 					window.location.replace('/dashboard');
+					<% }; %>
 				} else {
 					$('.alert-invalid-value').removeClass('hidden');
 				};

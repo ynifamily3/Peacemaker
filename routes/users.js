@@ -78,6 +78,18 @@ router.get('/login', csrfProtection, function(req, res, next) {
 	});
 });
 
+router.get('/login/back', csrfProtection, function(req, res, next) {
+	if (req.session.username) {
+		res.redirect('/dashboard');
+		return;
+	}
+	res.render('user_login', {
+		csrfToken: req.csrfToken(),
+		title: '로그인',
+		go_back: true
+	});
+});
+
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	connection.query('select * from users where username = ?', req.body.username, function(err, result) {
 		if (err) throw err;

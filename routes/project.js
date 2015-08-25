@@ -31,7 +31,7 @@ function phone_format(num) {
 
 router.get('/:project', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -66,7 +66,7 @@ router.get('/:project', csrfProtection, function(req, res, next) {
 
 router.get('/:project/contact', function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -100,7 +100,7 @@ router.get('/:project/contact', function(req, res, next) {
 
 router.get('/:project/contact/vcard', function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -122,7 +122,7 @@ router.get('/:project/contact/vcard', function(req, res, next) {
 
 router.get('/:project/calendar', function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -160,7 +160,7 @@ router.get('/:project/calendar', function(req, res, next) {
 
 router.get('/:project/chat', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -223,7 +223,7 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 	//수정 : 시그니처 생성 대신 그냥 메모의 Primary Key를 가져다 쓰기로 함.
 	//기본적인 권한 체크
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else if ( req.session.pid != req.body.myid || req.session.name != req.body.myname ) {
 		res.status(500); 
 		res.render('error', {
@@ -287,7 +287,7 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 
 router.post('/:project/chat/history', parseForm, csrfProtection, function (req,res,next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		var pid;
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
@@ -307,7 +307,7 @@ router.post('/:project/chat/history', parseForm, csrfProtection, function (req,r
 
 router.get('/:project/hangout', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
 			if (err) throw err;
@@ -361,7 +361,7 @@ router.post('/:project/hangout', parseForm, csrfProtection, function(req, res, n
 
 router.get('/:project/join', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 	} else {
 		connection.query('select * from projects where url = ?', [req.params.project], function(err, project_result) {
 			if (err) throw err;
@@ -472,7 +472,7 @@ router.post('/:project/join/cancel', parseForm, csrfProtection, function(req, re
 
 router.get('/:project/memo', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 		return;
 	}
 	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
@@ -509,7 +509,7 @@ router.get('/:project/memo', csrfProtection, function(req, res, next) {
 
 router.post('/:project/memo', function(req, res, next) {
 	if (!req.session.name) {
-		res.redirect('/user/login');
+		res.redirect('/user/login/back');
 		return;
 	}
 	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
