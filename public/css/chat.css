@@ -96,8 +96,8 @@
 	0% {opacity:0;margin-left:0px;}
 	100% {opacity:1;margin-left:10px;}
 }
-.image-upload > input
-{
+
+.image-upload > input {
 	display: none;
 }
 
@@ -107,13 +107,12 @@
 	top:532px;
 }
 
-.notification {
-	
-}
+.notification {}
 
 label p.btn {
 	height: 50px;
 }
+
 label p.btn span{
 	line-height: 26px;
 }
@@ -125,6 +124,18 @@ label p.btn span{
 	text-align: right;
 	color: #333;
 }
+
 .notification .relativeTime{
 	text-align: left;
+}
+
+ul.dropdown-menu li a {
+	margin: 0;
+	padding: 0;
+}
+
+ul.dropdown-menu li a label {
+	width: 100%;
+	height: 100%;
+	padding: 3px 20px;
 }
