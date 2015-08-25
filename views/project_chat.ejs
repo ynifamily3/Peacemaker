@@ -28,6 +28,7 @@
 				_csrf: '<%= csrfToken %>'
 			}, success : function(data2) {
 				socket.emit('client_emit', {signiture : data2.signiture, room : room});
+				renderTime();
 			}
 		});
 	}
@@ -57,22 +58,22 @@
 					else
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
-					$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+					$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
 					if(isme)
-						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
-						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				}
 				//적절한 위치로 스크롤
 				$('.scr_offset'+scr_num).ScrollTo({
 					duration: 500,
 					easing: 'linear'
 				});
+				renderTime();
 			}
 		});
-renderTime();
-}
+	}
 
 </script>
 <div class="col-md-10">
@@ -131,9 +132,9 @@ renderTime();
 						//$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data[i].content + "</div>");
 					} else {
 						if(isme) {
-							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 						} else {
-							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
 						}
 					}
 				}
@@ -143,11 +144,11 @@ renderTime();
 				});
 				socket.emit('join_the_room', {room:'<%=room%>'});
 				sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
+				renderTime();
 			}
 		});
 		socket.on('client_on', function(data) {
 			receiveMessage(data);
-			renderTime();
 		});
 		$('#cf').submit(function (event) {
 			event.preventDefault();
@@ -156,7 +157,6 @@ renderTime();
 			var str = $('#type').val();
 			sendMessage('PlainText', {text:str});
 			$('#type').val("");
-			renderTime();
 		});
 
 		function renderTime() {
