@@ -14,6 +14,7 @@
     "ejs": "~2.3.2",
     "express": "~4.13.0",
     "express-session": "^1.11.3",
+    "goo.gl": "^0.1.4",
     "htmlspecialchars": "^1.0.5",
     "moment": "^2.10.6",
     "morgan": "~1.6.1",
