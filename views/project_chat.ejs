@@ -29,6 +29,26 @@
 			}, success : function(data2) {
 				socket.emit('client_emit', {signiture : data2.signiture, room : room});
 				renderTime();
+				if (mtype == 'PlainText') {
+					var url = data.text;
+					url.autoLink({
+						callback: function(url) {
+							$.ajax({
+								type: 'post',
+								url:'/p/<%= project.url %>/memo/url',
+								data: {
+									color: 'blue',
+									content: url,
+									_csrf: '<%=csrfToken%>'
+								},
+								success: function (data) {
+									sendMessage('notification', {text: url + ' 링크가 메모에 자동으로 저장되었습니다.'});
+								}
+							});
+							return null;
+						}
+					});
+				};
 			}
 		});
 	}
@@ -58,7 +78,7 @@
 					else
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
-					$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
 					if(isme)
 						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
@@ -129,7 +149,7 @@
 							$('#chattingWindow .room').append("<div class='" + className +"'><b>" + data[i].name + "</b> <a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 						}
 					} else if(data[i].type == "notification") {
-						//$('#chattingWindow .room').append("<div class='" + noticlassName + " .notification'>" + data[i].content + "</div>");
+						//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 					} else {
 						if(isme) {
 							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");

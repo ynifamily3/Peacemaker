@@ -25,6 +25,9 @@ var csrfProtection = csrf({cookie: true});
 var bodyParser = require('body-parser');
 var parseForm = bodyParser.urlencoded({extended: false});
 
+var googl = require('goo.gl');
+googl.setKey('AIzaSyAzO33Wf2kgQLTLxjkyfE5RXjp1kuysT6Q');
+
 function phone_format(num) {
 	return num.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");
 }
@@ -194,7 +197,8 @@ router.get('/:project/chat', csrfProtection, function(req, res, next) {
 						'moment.js',
 						'jquery-scrollto.js',
 						'socket.io.js',
-						'jquery.form.js'
+						'jquery.form.js',
+						'autolink.js'
 					],
 					css: [
 						'chat.css'
@@ -227,8 +231,8 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 	} else if ( req.session.pid != req.body.myid || req.session.name != req.body.myname ) {
 		res.status(500); 
 		res.render('error', {
-    		message: 'Bad Request',
-    		error: {}
+				message: 'Bad Request',
+				error: {}
 		});
 	} else {
 		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
@@ -276,8 +280,8 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 				} else {
 					res.status(500); 
 					res.render('error', {
-    					message: 'Bad Request',
-    					error: {}
+							message: 'Bad Request',
+							error: {}
 					});
 				}
 			}
@@ -534,6 +538,56 @@ router.post('/:project/memo', function(req, res, next) {
 	});
 });
 
+router.post('/:project/memo/url', function(req, res, next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+		return;
+	}
+	connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+		if(result.length == 0) {
+			res.json({});
+		} else {
+			var url = req.body.content;
+			if (url.length >= 140) {
+				googl.shorten(url)
+						.then(function (shortUrl) {
+							var data = ({
+								project: result[0].id,
+								color: req.body.color,
+								is_finished: false,
+								writer: req.session.pid,
+								content: '[자동 저장] ' + shortUrl
+							});
+							connection.query('insert into memo_content set ?', data, function(err, result) {
+								if (err) throw err;
+								res.json({
+									'status': 'success',
+									'id': result.insertId
+								});
+							});
+						})
+						.catch(function (err) {
+							console.error(err.message);
+						});
+			} else {
+				var data = ({
+					project: result[0].id,
+					color: req.body.color,
+					is_finished: false,
+					writer: req.session.pid,
+					content: '[자동 저장] ' + url
+				});
+				connection.query('insert into memo_content set ?', data, function(err, result) {
+					if (err) throw err;
+					res.json({
+						'status': 'success',
+						'id': result.insertId
+					});
+				});
+			}
+		}
+	});
+});
 
 router.post('/:project/memo/:page', parseForm, csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
