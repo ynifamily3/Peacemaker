@@ -78,12 +78,12 @@
 					else
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
-					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
 					if(isme)
-						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className + "'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
-						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				}
 				//적절한 위치로 스크롤
 				$('.scr_offset'+scr_num).ScrollTo({
@@ -152,9 +152,9 @@
 						//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 					} else {
 						if(isme) {
-							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 						} else {
-							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content.autoLink() + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
 						}
 					}
 				}
