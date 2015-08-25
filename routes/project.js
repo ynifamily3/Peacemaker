@@ -158,7 +158,7 @@ router.get('/:project/calendar', function(req, res, next) {
 	}
 });
 
-router.get('/:project/chat', function(req, res, next) {
+router.get('/:project/chat', csrfProtection, function(req, res, next) {
 	if (!req.session.name) {
 		res.redirect('/user/login');
 	} else {
@@ -167,9 +167,9 @@ router.get('/:project/chat', function(req, res, next) {
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				var ws_url = 'node.niceb5y.net';
+				var ws_url = 'pm.niceb5y.net';
 				if (process.env.NODE_ENV != 'production') {
-					ws_url = 'localhost';
+					ws_url = '127.0.0.1';
 				}
 				res.render('project_chat', {
 					auth_token: req.sessionID,
@@ -189,7 +189,9 @@ router.get('/:project/chat', function(req, res, next) {
 					title: result[0].name,
 					room: result[0].id,
 					ws_addr: ws_url,
+					csrfToken: req.csrfToken(),
 					js: [
+						'moment.js',
 						'jquery-scrollto.js',
 						'socket.io.js',
 						'jquery.form.js'
@@ -197,6 +199,106 @@ router.get('/:project/chat', function(req, res, next) {
 					css: [
 						'chat.css'
 					]
+				});
+			}
+		});
+	}
+});
+
+router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next) {
+	//send모드 : 유저가 전달한 내용을 database에 저장하고 생성된 시그니처를 돌려준다.
+	//receive모드 : 시그니처를 기반으로 data를 찾아 돌려준다.
+	//req.body ~ 로 post variable를 받을 수 있다.
+	/*
+	받아들이는 변수 목록
+		mode : send / receive
+		send 의 경우  {
+			type : File / PlainText / notification
+			content : FileSigniture / message / message
+		}
+		receive 의 경우 {
+			signiture : Signiture Value
+		}
+	*/
+	//수정 : 시그니처 생성 대신 그냥 메모의 Primary Key를 가져다 쓰기로 함.
+	//기본적인 권한 체크
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else if ( req.session.pid != req.body.myid || req.session.name != req.body.myname ) {
+		res.status(500); 
+		res.render('error', {
+    		message: 'Bad Request',
+    		error: {}
+		});
+	} else {
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				//인증 통과
+				if (req.body.mode == "send") {
+					//유저가 채팅 내용을 전송했다. 데이터베이스에 저장 후 시그니처-Primary Key-를 생성 후 돌려준다.
+					var today = new Date();
+					var year = today.getFullYear();
+					var month = today.getMonth() + 1;
+					var day = today.getDate();
+					var queries;
+					if(req.body.type == "File") {
+						queries = {
+							project_id : result[0].id,
+							type : req.body.type,
+							content : req.body.content,
+							original : req.body.original,
+							size : req.body.size,
+							writer: req.session.pid
+						};
+						
+					} else {
+						queries = {
+							project_id : result[0].id,
+							type : req.body.type,
+							content : req.body.content,
+							writer: req.session.pid
+						};
+					}
+					connection.query('insert into chatting_content set ?', queries, function (err, result2) {
+						res.json({signiture:result2.insertId});
+					});
+					
+				} else if (req.body.mode == "receive") {
+					//시그니쳐를 해석해서 데이터로 돌려준다
+					//type과 content를 돌려준다. + 기타 데이터도 돌려줘
+					//writer로 닉네임을 찾아 돌려준다.
+					connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where num = ?', [req.body.signiture], function(err, result2) {
+						res.json({type:result2[0].type, content:result2[0].content, writer:result2[0].writer, writer_name:result2[0].name, date:result2[0].created_date, original:result2[0].original, size:result2[0].size});
+					});
+				} else {
+					res.status(500); 
+					res.render('error', {
+    					message: 'Bad Request',
+    					error: {}
+					});
+				}
+			}
+		});
+	}
+});
+
+router.post('/:project/chat/history', parseForm, csrfProtection, function (req,res,next) {
+	if (!req.session.name) {
+		res.redirect('/user/login');
+	} else {
+		var pid;
+		connection.query('select * from project_entries join projects on projects.id = project_entries.id where pid = ? and url = ?', [req.session.pid, req.params.project], function(err, result) {
+			if (err) throw err;
+			pid = result[0].id;
+			if (result.length == 0) {
+				res.redirect('/p/' + req.params.project + '/join');
+			} else {
+				connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
+					if (err) throw err;
+					res.json(result);
 				});
 			}
 		});

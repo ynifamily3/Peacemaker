@@ -1,12 +1,35 @@
 #chattingWindow .room {
 	width:100%;
-	min-height:480px;
-	height: 100%;
+	height: 480px;
 	margin:auto;
 	padding:20px;
 	background-color: #C2EBFF;
 	overflow-y:scroll;
 	box-sizing: border-box;
+}
+
+@media screen and ( min-height: 720px ){
+	#chattingWindow .room {
+		height: 530px;
+	}
+}
+
+@media screen and ( min-height: 900px ){
+	#chattingWindow .room {
+		height: 650px;
+	}
+}
+
+@media screen and ( min-height: 1080px ){
+	#chattingWindow .room {	
+		height: 830px;
+	}
+}
+
+@media screen and ( min-height: 1440px ){
+	#chattingWindow .room {
+		height: 1090px;
+	}
 }
 
 #chattingWindow .control {
@@ -37,6 +60,8 @@
 	padding: 10px;
 	border-radius: 10px;
 	box-sizing: border-box;
+	overflow-x:hidden;
+	word-break:break-all;
 }
 
 .me {
@@ -79,4 +104,15 @@
 .image-upload {
 	position:absolute;
 
+}
+
+.notification {
+	
+}
+
+label p.btn {
+	height: 50px;
+}
+label p.btn span{
+	line-height: 26px;
 }
