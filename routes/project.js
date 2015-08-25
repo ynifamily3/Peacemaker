@@ -150,10 +150,12 @@ router.get('/:project/calendar', function(req, res, next) {
 					js: [
 						'moment.js',
 						'fullcalendar.js',
-						'fullcalendar-ko.js'
+						'fullcalendar-ko.js',
+						'bootstrap-datetimepicker.js'
 					],
 					css: [
-						'fullcalendar.css'
+						'fullcalendar.css',
+						'bootstrap-datetimepicker.css'
 					]
 				});
 			}
@@ -300,7 +302,7 @@ router.post('/:project/chat/history', parseForm, csrfProtection, function (req,r
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				connection.query('select * from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
+				connection.query('select num, project_id, type, content, writer, original, size, created_date, pid, name, username from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
 					if (err) throw err;
 					res.json(result);
 				});
