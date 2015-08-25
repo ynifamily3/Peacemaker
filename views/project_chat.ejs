@@ -1,6 +1,38 @@
 <% include layout_header %>
 <% include layout_project_sidebar %>
 
+<div class="col-md-10">
+	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
+	<div id="chattingWindow">
+		<div class="room">
+			<!--대화 내용-->
+		</div>
+		<div class="afterMessage"> ↓ 추가 메시지 : 0개 </div>
+		<div class="control">
+			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data" method="POST">
+				<div class="form-group image-upload">
+					<div class="dropup">
+						<button class="btn btn-primary btn-pull" type="button" data-toggle="dropdown">
+						<span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a href="#"><label for="location">위치</label></a></li>
+							<li><a href="#"><label for="imagefile">이미지</label></a></li></label>
+							<li><a href="#"><label for="file">파일</label></a></li>
+						</ul>
+					</div>
+					<input type="file" id="file" name="uploadFile" class="uniqueUpload"/>
+					<input type="file" id="imagefile" name="uploadImage" accept="image/png, image/x-png, image/gif, image/jpeg" />
+				</div>
+			</form>
+			<form action="#" id="cf">
+				<input type="text" class="inputText" id="type"/>
+			</form>
+		</div>
+	</div>
+</div>
+
+
 <script>
 	var room = '<%=room%>';
 	var scr_num = 0; //스크롤할 곳 추적용
@@ -104,172 +136,133 @@
 			}
 		});
 	}
-
-</script>
-<div class="col-md-10">
-	<!--<h3>닉네임 : <script>document.write(name);</script></h3>-->
-	<div id="chattingWindow">
-		<div class="room">
-			<!--대화 내용-->
-		</div>
-		<div class="afterMessage"> ↓ 추가 메시지 : 0개 </div>
-		<div class="control">
-			<form name="multiform" id="multiform" action="/files" enctype="multipart/form-data" method="POST">
-				<div class="form-group image-upload">
-					<!--<label for="file">-->
-						<div class="dropup">
-							<button class="btn btn-default" type="button" data-toggle="dropdown">Upload</button>
-							<ul class="dropdown-menu">
-								<li><a href="#"><label for="location">위치</label></a></li>
-								<li><a href="#"><label for="imagefile">이미지</label></a></li></label>
-								<li><a href="#"><label for="file">파일</label></a></li>
-    						</ul>
-  						</div>
-						<!--<p class="btn btn-primary">
-							<span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-							
-						</p>
-					</label>-->
-					<input type="file" id="file" name="uploadFile" class="uniqueUpload"/>
-					<input type="file" id="imagefile" name="uploadImage" accept="image/x-png, image/gif, image/jpeg" />
-				</div>
-			</form>
-			<!--말할수 있는 부분-->
-			<form action="#" id="cf">
-				<input type="text" class="inputText" id="type"/>
-			</form>
-		</div>
-	</div>
-	<script type="text/javascript">
-		$('body').ready(function () {$('#type').focus();});
-		$('body').keydown(function () {$('#type').focus();});
-		var wsurl = window.location.href.split("/")[2].split(":")[0];
-		var socket = io.connect('ws://' + wsurl + ':8080');
-		//기존 채팅 내용 불러오기
-		$.ajax({
-			type:'post',
-			url:'/p/<%= project.url %>/chat/history',
-			data: {
-				_csrf: '<%= csrfToken %>'
-			},
-			success : function (data) {
-				for(var i = 0; i < data.length; i++) {
-					++scr_num;
-					var isme = false;
-					var className = "ballon scr_offset" + scr_num;
-					if(data[i].pid == myid) {
-						className = "ballon me scr_offset" + scr_num;
-						isme = true;
-					}
-					//var noticlassName = "scr_offset" + scr_num;
-					if(data[i].type == "File") {
-						if(isme) {
-							$('#chattingWindow .room').append("<div class='" + className +"'>" + "<a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
-						} else {
-							$('#chattingWindow .room').append("<div class='" + className +"'><b>" + data[i].name + "</b> <a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
-						}
-					} else if(data[i].type == "Image") {
-							if(isme)
-								$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
-							else
-								$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
-					} else if(data[i].type == "notification") {
-						//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
+	$('body').ready(function () {$('#type').focus();});
+	$('body').keydown(function () {$('#type').focus();});
+	var wsurl = window.location.href.split("/")[2].split(":")[0];
+	var socket = io.connect('ws://' + wsurl + ':8080');
+	//기존 채팅 내용 불러오기
+	$.ajax({
+		type:'post',
+		url:'/p/<%= project.url %>/chat/history',
+		data: {
+			_csrf: '<%= csrfToken %>'
+		},
+		success : function (data) {
+			for(var i = 0; i < data.length; i++) {
+				++scr_num;
+				var isme = false;
+				var className = "ballon scr_offset" + scr_num;
+				if(data[i].pid == myid) {
+					className = "ballon me scr_offset" + scr_num;
+					isme = true;
+				}
+				//var noticlassName = "scr_offset" + scr_num;
+				if(data[i].type == "File") {
+					if(isme) {
+						$('#chattingWindow .room').append("<div class='" + className +"'>" + "<a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
 					} else {
-						if(isme) {
-							$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
-						} else {
-							$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
-						}
+						$('#chattingWindow .room').append("<div class='" + className +"'><b>" + data[i].name + "</b> <a href='/files/" + data[i].content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data[i].original + "</a><br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
+					}
+				} else if(data[i].type == "Image") {
+						if(isme)
+							$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						else
+							$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+				} else if(data[i].type == "notification") {
+					//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
+				} else {
+					if(isme) {
+						$('#chattingWindow .room').append("<div class='" + className + "'>" + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date +"'></p></div>");
+					} else {
+						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data[i].name + "</b> " + data[i].content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + data[i].created_date + "'></p></div>");
 					}
 				}
-				$('.scr_offset'+scr_num).ScrollTo({
-					duration: 500,
-					easing: 'linear'
-				});
-				socket.emit('join_the_room', {room:'<%=room%>'});
-				sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
-				renderTime();
 			}
-		});
-		socket.on('client_on', function(data) {
-			receiveMessage(data);
-		});
-		$('#cf').submit(function (event) {
-			event.preventDefault();
-			if($('#type').val() == "")
-				return;
-			var str = $('#type').val();
-			sendMessage('PlainText', {text:str});
-			$('#type').val("");
-		});
-
-		function renderTime() {
-			$('.relativeTime').each(function() {
-				$(this).text(moment($(this).data('timestamp')).fromNow());
+			$('.scr_offset'+scr_num).ScrollTo({
+				duration: 500,
+				easing: 'linear'
 			});
-		}
-
-		var cnt;
-		var isUpdated = true;
-		(function() {
-			$('#multiform').ajaxForm({
-				beforeSend: function() {
-					if(!isUpdated ) {
-						alert('죄송합니다. 기능상의 문제로 하나씩 업로드가 가능합니다. 취소하려면 X버튼을 눌러 업로드를 중지하세요.');
-						$(this).abort();
-					}
-					isUpdated = false;
-					++temp_ballon;
-					var className = 'ballon me tmp' + temp_ballon;
-					cnt = $("<div class='"+className+"'>파일을 전송 중입니다..<br>"+ GetFileName() +"(0%)</div>").appendTo('#chattingWindow .room');
-				},
-				uploadProgress: function(event, position, total, percentComplete) {
-					var percentVal = percentComplete + '%';
-					cnt.html('파일을 전송 중입니다..<br>'+ GetFileName() +' ('+ percentVal+')');
-				},
-				success: function() {
-				},
-				complete: function(xhr) {
-					$("form").each(function() {
-						if(this.id == "multiform") this.reset();
-					});
-					cnt.remove();
-					isUpdated = true;
-					var s = JSON.parse(xhr.responseText);
-					if(!imgup)
-							sendMessage('File', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
-					else
-							sendMessage('Image', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
-				}
-			});
-		})();
-
-		if (window.FileReader) {
-			function handleFileSelect(evt) {
-				var files = evt.target.files;
-				imgup = false;
-				if(evt.target.name == "uploadImage") {
-					imgup = true;
-				}
-				var f = files[0];
-				var reader = new FileReader();
-				reader.onload = (function(theFile) {
-					return function(e) {
-						thumbnail='#';
-						$("#multiform").submit();
-					};
-				})(f);
-				reader.readAsDataURL(f);
-			}
-		} else {
-			alert('This browser does not support FileReader');
-		}
-		document.getElementById('file').addEventListener('change', handleFileSelect, false);
-		document.getElementById('imagefile').addEventListener('change', handleFileSelect, false);
-		setInterval(function() {
+			socket.emit('join_the_room', {room:'<%=room%>'});
+			sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
 			renderTime();
-		}, 30000);
-	</script>
-</div>
+		}
+	});
+	socket.on('client_on', function(data) {
+		receiveMessage(data);
+	});
+	$('#cf').submit(function (event) {
+		event.preventDefault();
+		if($('#type').val() == "")
+			return;
+		var str = $('#type').val();
+		sendMessage('PlainText', {text:str});
+		$('#type').val("");
+	});
+
+	function renderTime() {
+		$('.relativeTime').each(function() {
+			$(this).text(moment($(this).data('timestamp')).fromNow());
+		});
+	}
+
+	var cnt;
+	var isUpdated = true;
+	(function() {
+		$('#multiform').ajaxForm({
+			beforeSend: function() {
+				if(!isUpdated ) {
+					alert('죄송합니다. 기능상의 문제로 하나씩 업로드가 가능합니다. 취소하려면 X버튼을 눌러 업로드를 중지하세요.');
+					$(this).abort();
+				}
+				isUpdated = false;
+				++temp_ballon;
+				var className = 'ballon me tmp' + temp_ballon;
+				cnt = $("<div class='"+className+"'>파일을 전송 중입니다..<br>"+ GetFileName() +"(0%)</div>").appendTo('#chattingWindow .room');
+			},
+			uploadProgress: function(event, position, total, percentComplete) {
+				var percentVal = percentComplete + '%';
+				cnt.html('파일을 전송 중입니다..<br>'+ GetFileName() +' ('+ percentVal+')');
+			},
+			success: function() {
+			},
+			complete: function(xhr) {
+				$("form").each(function() {
+					if(this.id == "multiform") this.reset();
+				});
+				cnt.remove();
+				isUpdated = true;
+				var s = JSON.parse(xhr.responseText);
+				if(!imgup)
+						sendMessage('File', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
+				else
+						sendMessage('Image', {text:s[0].filename, original:s[0].originalname, size:s[0].size});
+			}
+		});
+	})();
+	if (window.FileReader) {
+		function handleFileSelect(evt) {
+			var files = evt.target.files;
+			imgup = false;
+			if(evt.target.name == "uploadImage") {
+				imgup = true;
+			}
+			var f = files[0];
+			var reader = new FileReader();
+			reader.onload = (function(theFile) {
+				return function(e) {
+					thumbnail='#';
+					$("#multiform").submit();
+				};
+			})(f);
+			reader.readAsDataURL(f);
+		}
+	} else {
+		alert('This browser does not support FileReader');
+	}
+	document.getElementById('file').addEventListener('change', handleFileSelect, false);
+	document.getElementById('imagefile').addEventListener('change', handleFileSelect, false);
+	setInterval(function() {
+		renderTime();
+	}, 30000);
+</script>
 <% include layout_footer %>
