@@ -8,6 +8,38 @@
 	<div class="col-md-1 col-sm-2 col-xs-2">
 		<button id="cancel" class="btn btn-danger btn-sm btn-block">취소</button>	
 	</div>
+	<div class="col-md-10">
+	<br>
+		<form>
+			<div class="checkbox">
+				<label>
+					<input id="dateOnly" type="checkbox"> 종일
+				</label>
+			</div>
+			<div id="dateTimePicker">
+				<div class="form-group">
+					<label for="startDateTime">시작일</label>
+					<input type="text" class="form-control" id="startDateTime" placeholder="시작일">
+				</div>
+				<br>
+				 <div class="form-group">
+					<label for="startDateTime">종료일</label>
+					<input type="text" class="form-control" id="endDateTime" placeholder="종료일">
+				</div>
+			</div>
+			<div id="datePicker" class="hidden">
+				<div class="form-group">
+					<label for="startTime">시작일</label>
+					<input type="text" class="form-control" id="startDate" placeholder="시작일">
+				</div>
+				<br>
+				 <div class="form-group">
+					<label for="startTime">종료일</label>
+					<input type="text" class="form-control" id="endDate" placeholder="종료일">
+				</div>
+			</div>
+			<br>
+			<input type="submit" class="btn btn-primary btn-block" value="추가">
 </div>
 <script>
 	$('#cancel').click(function(){
@@ -37,6 +69,27 @@
 		 },
 		 events: []
 		});
+		$('#startDateTime').datetimepicker({
+			format: 'YYYY-MM-DD HH:mm'
+		});
+		$('#endDateTime').datetimepicker({
+			format: 'YYYY-MM-DD HH:mm'
+		});
+		$('#startDate').datetimepicker({
+			format: 'YYYY-MM-DD'
+		});
+		$('#endDate').datetimepicker({
+			format: 'YYYY-MM-DD'
+		});
 	});
+	$('#dateOnly').click(function() {
+		if ($(this).is(':checked')) {
+			$('#dateTimePicker').addClass('hidden');
+			$('#datePicker').removeClass('hidden');
+		} else {
+			$('#datePicker').addClass('hidden');
+			$('#dateTimePicker').removeClass('hidden');
+		}
+	})
 </script>
 <% include layout_footer %>

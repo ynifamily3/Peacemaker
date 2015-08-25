@@ -147,10 +147,12 @@ router.get('/:project/calendar', function(req, res, next) {
 					js: [
 						'moment.js',
 						'fullcalendar.js',
-						'fullcalendar-ko.js'
+						'fullcalendar-ko.js',
+						'bootstrap-datetimepicker.js'
 					],
 					css: [
-						'fullcalendar.css'
+						'fullcalendar.css',
+						'bootstrap-datetimepicker.css'
 					]
 				});
 			}
