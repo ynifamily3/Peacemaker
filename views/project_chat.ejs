@@ -89,6 +89,9 @@
 			}
 		});
 	}
+	function scrollfunc(a) {
+		document.getElementsByClassName('room')[0].scrollTop = document.getElementsByClassName('room')[0].scrollHeight;
+	}
 	
 	function receiveMessage(sig) {
 		$.ajax({
@@ -116,9 +119,9 @@
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "Image") {
 					if(isme)
-						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img onload='scrollfunc(1)' src = '/image?v=" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
-						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img src = '/files/" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img onload='scrollfunc(1)' src = '/image?v=" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
 					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
@@ -127,11 +130,7 @@
 					else
 						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				}
-				//적절한 위치로 스크롤
-				$('.scr_offset'+scr_num).ScrollTo({
-					duration: 500,
-					easing: 'linear'
-				});
+				scrollfunc();
 				renderTime();
 			}
 		});
@@ -165,9 +164,9 @@
 					}
 				} else if(data[i].type == "Image") {
 						if(isme)
-							$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/image?v=" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 						else
-							$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/image?v=" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data[i].type == "notification") {
 					//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 				} else {
@@ -178,10 +177,6 @@
 					}
 				}
 			}
-			$('.scr_offset'+scr_num).ScrollTo({
-				duration: 500,
-				easing: 'linear'
-			});
 			socket.emit('join_the_room', {room:'<%=room%>'});
 			sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
 			renderTime();
