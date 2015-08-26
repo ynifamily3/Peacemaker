@@ -141,13 +141,19 @@ router.get('/about', function(req, res) {
 
 router.get('/image', function(req, res) {
 	if(!req.query.v) {
-		res.status(404);
-		res.render('404error');
+		res.status(404); 
+		res.render('error', {
+				message: 'Not Found',
+				error: {}
+		});
 	}  else {
 		fs.readFile( __dirname + '/../public/uploads/' + req.query.v, function(err, resImg) {
 			if(err) {
-				res.status(404);
-				res.render('404error');
+				res.status(404); 
+				res.render('error', {
+						message: 'Not Found',
+						error: {}
+				});
 			} else {
 				var imgType;
 				connection.query('select original from files where path = ?', [req.query.v], function(err, result) {
