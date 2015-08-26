@@ -116,9 +116,9 @@
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "Image") {
 					if(isme)
-						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/image?v=" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
-						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img src = '/image?v=" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img src = '/files/" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
 					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
@@ -165,9 +165,9 @@
 					}
 				} else if(data[i].type == "Image") {
 						if(isme)
-							$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/image?v=" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/files/" + data[i].content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 						else
-							$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/image?v=" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+							$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data[i].name + "</b><br><img src = '/files/" + data[i].content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data[i].type == "notification") {
 					//$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data[i].content + "</div>");
 				} else {

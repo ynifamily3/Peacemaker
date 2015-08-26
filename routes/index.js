@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var mime = require('mime');
-var fs = require("fs");
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -137,28 +135,6 @@ router.get('/files/:id', function(req, res) {
 
 router.get('/about', function(req, res) {
 	res.render('about');
-});
-
-router.get('/image', function(req, res) {
-	if(!req.query.v) {
-		res.status(404);
-		res.render('404error');
-	}  else {
-		fs.readFile( __dirname + '/../public/uploads/' + req.query.v, function(err, resImg) {
-			if(err) {
-				res.status(404);
-				res.render('404error');
-			} else {
-				var imgType;
-				connection.query('select original from files where path = ?', [req.query.v], function(err, result) {
-					imgType = mime.lookup(result[0].original);
-					res.writeHead(200, {'Content-Type' : imgType});
-					res.end(resImg);
-				});
-			}
-		});
-	}
-
 });
 
 module.exports = router;
