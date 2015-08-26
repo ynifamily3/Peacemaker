@@ -89,6 +89,9 @@
 			}
 		});
 	}
+	function scrollfunc(a) {
+		document.getElementsByClassName('room')[0].scrollTop = document.getElementsByClassName('room')[0].scrollHeight;
+	}
 	
 	function receiveMessage(sig) {
 		$.ajax({
@@ -116,9 +119,9 @@
 						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b> <a href='/files/" + data.content + "'><span class=\"glyphicon glyphicon-file\" aria-hidden=\"true\"></span> " + data.original + "</a><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "Image") {
 					if(isme)
-						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img src = '/image?v=" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'>" + "<img onload='scrollfunc(1)' src = '/image?v=" + data.content + "'/><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 					else
-						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img src = '/image?v=" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
+						$('#chattingWindow .room').append("<div class='" + className+"'><b>" + data.writer_name + "</b><br><img onload='scrollfunc(1)' src = '/image?v=" + data.content + "'><br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else if(data.type == "notification") {
 					$('#chattingWindow .room').append("<div class='" + noticlassName + " notification'>" + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				} else {
@@ -127,8 +130,7 @@
 					else
 						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				}
-				//적절한 위치로 스크롤
-				document.getElementsByClassName('room')[0].scrollTop = document.getElementsByClassName('room')[0].scrollHeight;
+				scrollfunc();
 				renderTime();
 			}
 		});
