@@ -143,16 +143,16 @@ router.get('/image', function(req, res) {
 	if(!req.query.v) {
 		res.status(404); 
 		res.render('error', {
-				message: 'Not Found',
-				error: {}
+			message: 'Not Found',
+			error: {}
 		});
 	}  else {
 		fs.readFile( __dirname + '/../public/uploads/' + req.query.v, function(err, resImg) {
 			if(err) {
 				res.status(404); 
 				res.render('error', {
-						message: 'Not Found',
-						error: {}
+					message: 'Not Found',
+					error: {}
 				});
 			} else {
 				var imgType;
