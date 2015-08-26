@@ -2,6 +2,6 @@
   "name": "peacemaker",
   "script": "bin/www",
   "watch": ["routes", "app.js", "config.json"],
-  "ignore_watch": ["public", "node_modules"],
+  "ignore_watch": ["public", "node_modules", "sessions"],
   "autorestart": true
 }
