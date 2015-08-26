@@ -55,7 +55,7 @@
 					content: $('#inputMemo').val(),
 					_csrf: '<%=csrfToken%>'
 				}, success: function(data) {
-					$('tr:eq(1)').before(render(data.id, selected, '<%= user.name %>', $('#inputMemo').val(), 0));
+					$('tr:eq(1)').before(render(data.id, selected, '<%= user.name %>', htmlspecialchars($('#inputMemo').val()), 0));
 					$('#inputMemo').val('');
 				}
 			});

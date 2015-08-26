@@ -1,121 +1,155 @@
 #chattingWindow .room {
-	width:100%;
+	width: 100%;
 	height: 480px;
-	margin:auto;
-	padding:20px;
+	margin: auto;
+	padding: 20px;
 	background-color: #C2EBFF;
-	overflow-y:scroll;
+	overflow-y: scroll;
 	box-sizing: border-box;
 }
 
 @media screen and ( min-height: 720px ){
 	#chattingWindow .room {
-		height: 530px;
+		height: 520px;
 	}
 }
 
 @media screen and ( min-height: 900px ){
 	#chattingWindow .room {
-		height: 650px;
+		height: 700px;
 	}
 }
 
 @media screen and ( min-height: 1080px ){
 	#chattingWindow .room {	
-		height: 830px;
+		height: 880px;
 	}
 }
 
 @media screen and ( min-height: 1440px ){
 	#chattingWindow .room {
-		height: 1090px;
+		height: 1240px;
+	}
+}
+
+@media screen and ( min-height: 1600px ){
+	#chattingWindow .room {
+		height: 1400px;
 	}
 }
 
 #chattingWindow .control {
 	background-color: #ffffff;
-	width:100%;
-	margin:0;
-	padding:0;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
 
 #chattingWindow .inputText {
-	width:100%;
-	height:50px;
-	font-size:12pt;
+	width: 100%;
+	height: 50px;
+	font-size: 12pt;
 	outline: 0;
 	border: 1px solid #e8e8e8;
 	background-color: rgba(0, 0, 0, 0);
 	font-family: sans-serif;
-	padding-left:90px;
-}
-
-.ballon {
-	animation:TNU 0.5s;
-	background-color: #daffc6;
-	margin-left:10px;
-	margin-right:10px;
-	margin-bottom:10px;
-	width:55%;
-	padding: 10px;
-	border-radius: 10px;
-	box-sizing: border-box;
-	overflow-x:hidden;
-	word-break:break-all;
-}
-
-.me {
-	animation:CNU 0.5s;
-	margin-left:45%;
-	background-color: #fffbee;
-	clear:right;
-}
-
-.system {
-	margin-bottom:10px;
-}
-
-.afterMessage {
-	position:absolute;
-	text-align:center;
-	width:640px;
-	top:78%;
-	height:30px;
-	padding-top:5px;
-	overflow:hidden;
-	display:none;
-	background-color:rgba(218, 255, 102, 0.5);
-}
-
-@keyframes CNU {
-	0% {opacity:0;margin-right:20px;}
-	100% {opacity:1;margin-right:10px;}
-}
-
-@keyframes TNU {
-	0% {opacity:0;margin-left:0px;}
-	100% {opacity:1;margin-left:10px;}
-}
-.image-upload > input
-{
-	display: none;
+	padding-left: 55px;
 }
 
 .image-upload {
-	position:absolute;
-	left:15px;
-	top:532px;
+	margin: 0;
 }
 
-.notification {
-	
+.image-upload button{
+	position: absolute;
+	height: 50px;
+	line-height: 26px;
+	z-index: 2;
 }
+
+#multiform {
+	margin: 0;
+}
+
+#cf {
+	z-index: 1;
+}
+
+.ballon {
+	animation: TNU 0.5s;
+	background-color: #daffc6;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	width: 55%;
+	padding: 10px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	overflow-x: hidden;
+	word-break: break-all;
+}
+
+.ballon img {
+	width: 100%;
+}
+
+.me {
+	animation: CNU 0.5s;
+	margin-left: 45%;
+	background-color: #fffbee;
+	clear: right;
+}
+
+.system {
+	margin-bottom: 10px;
+}
+
+.afterMessage {
+	position: absolute;
+	text-align: center;
+	width: 640px;
+	top: 78%;
+	height: 30px;
+	padding-top: 5px;
+	overflow: hidden;
+	display: none;
+	background-color: rgba(218, 255, 102, 0.5);
+}
+
+@keyframes CNU {
+	0% {opacity: 0;margin-right: 20px;}
+	100% {opacity: 1;margin-right: 10px;}
+}
+
+@keyframes TNU {
+	0% {opacity: 0;margin-left: 0px;}
+	100% {opacity: 1;margin-left: 10px;}
+}
+
+.image-upload input {
+	display: none;
+}
+
+.notification {}
 
 label p.btn {
 	height: 50px;
 }
+
 label p.btn span{
 	line-height: 26px;
+}
+
+.relativeTime {
+	font-size: 0.8em;
+	font-style: italic;
+	margin: 5px 0 0 0;
+	text-align: right;
+	color: #333;
+}
+
+.notification .relativeTime{
+	text-align: left;
 }
 
 ul.dropdown-menu li a {

@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var FileStore = require('session-file-store')(session);
 
 var htmlspecialchars = require('htmlspecialchars');
 var routes = require('./routes/index');
@@ -33,7 +34,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-	cookie: {maxAge: 1800000},
+	cookie: {},
+	store: new FileStore({}),
 	secret: '98bec3f956899257d0f02ae3810aa0f2',
 	resave: false,
 	saveUninitialized: true

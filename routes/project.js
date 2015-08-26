@@ -233,19 +233,18 @@ router.post('/:project/chat', parseForm, csrfProtection, function(req, res, next
 					if(req.body.type == "File" || req.body.type == "Image") {
 						console.log("★req.body.content : " + req.body.content);
 						queries = {
-							project_id : result[0].id,
-							type : req.body.type,
-							content : req.body.content,
-							original : req.body.original,
-							size : req.body.size,
+							project_id: result[0].id,
+							type: req.body.type,
+							content: htmlspecialchars(req.body.content),
+							original: req.body.original,
+							size: req.body.size,
 							writer: req.session.pid
 						};
-						
 					} else {
 						queries = {
-							project_id : result[0].id,
-							type : req.body.type,
-							content : req.body.content,
+							project_id: result[0].id,
+							type: req.body.type,
+							content: htmlspecialchars(req.body.content),
 							writer: req.session.pid
 						};
 					}
@@ -280,7 +279,7 @@ router.post('/:project/chat/history', parseForm, csrfProtection, function (req,r
 			if (result.length == 0) {
 				res.redirect('/p/' + req.params.project + '/join');
 			} else {
-				connection.query('select num, project_id, type, content, writer, original, size, created_date, pid, name, username from chatting_content join users on chatting_content.writer = users.pid where project_id = ?', [pid], function (err, result) {
+				connection.query('select num, project_id, type, content, writer, original, size, created_date, pid, name, username from chatting_content join users on chatting_content.writer = users.pid where project_id = ? order by created_date asc', [pid], function (err, result) {
 					if (err) throw err;
 					res.json(result);
 				});
@@ -481,7 +480,8 @@ router.get('/:project/memo', csrfProtection, function(req, res, next) {
 				csrfToken: req.csrfToken(),
 				title: result[0].name,
 				js: [
-					'autolink.js'
+					'autolink.js',
+					'htmlspecialchars.js'
 				],
 				css: [
 					'memo.css'
@@ -505,7 +505,7 @@ router.post('/:project/memo', function(req, res, next) {
 				color: req.body.color,
 				is_finished: false,
 				writer: req.session.pid,
-				content: req.body.content
+				content: htmlspecialchars(req.body.content)
 			}
 			connection.query('insert into memo_content set ?', data, function(err, result) {
 				if (err) throw err;

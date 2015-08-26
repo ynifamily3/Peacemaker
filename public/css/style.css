@@ -10,10 +10,10 @@ nav#navbar {
 	padding: 0;
 }
 
-.list-group-item {
+.kwon.list-group-item {
 	transition: all 0.2s ease-out;
 }
 
-.list-group-item:hover {
+.kwon.list-group-item:hover {
 	font-size: 1.2em;
 }
