@@ -128,10 +128,7 @@
 						$('#chattingWindow .room').append("<div class='" + className + "'><b>" + data.writer_name + "</b> " + data.content.autoLink({ target: "_blank"}) + "<br><p class='relativeTime' data-timestamp='" + moment() +"'></p></div>");
 				}
 				//적절한 위치로 스크롤
-				$('.scr_offset'+scr_num).ScrollTo({
-					duration: 500,
-					easing: 'linear'
-				});
+				document.getElementsByClassName('room')[0].scrollTop = document.getElementsByClassName('room')[0].scrollHeight;
 				renderTime();
 			}
 		});
@@ -178,10 +175,6 @@
 					}
 				}
 			}
-			$('.scr_offset'+scr_num).ScrollTo({
-				duration: 500,
-				easing: 'linear'
-			});
 			socket.emit('join_the_room', {room:'<%=room%>'});
 			sendMessage('notification', {text:'<%=user.name%>님이 입장하셨습니다.'});
 			renderTime();
