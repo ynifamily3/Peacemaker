@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var mime = require('mime');
+var fs = require('fs');
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
